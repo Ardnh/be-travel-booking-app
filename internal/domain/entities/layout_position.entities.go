@@ -16,6 +16,8 @@ type LayoutPosition struct {
 	IsUsed           bool      `gorm:"column:is_used;type:boolean;default:true"`
 	CreatedAt        time.Time `gorm:"column:created_at;type:timestamp;default:CURRENT_TIMESTAMP;autoCreateTime:milli"`
 	UpdatedAt        time.Time `gorm:"column:updated_at;type:timestamp;default:CURRENT_TIMESTAMP;autoUpdateTime:milli"`
+
+	// LayoutRef Layout `gorm:"foreignKey:LayoutID;references:LayoutID"`
 }
 
 func (LayoutPosition) TableName() string {

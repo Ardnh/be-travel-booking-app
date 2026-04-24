@@ -16,8 +16,15 @@ type ServiceType struct {
 	NeedDropoffAddress bool      `gorm:"column:need_dropoff_address;type:boolean;default:false"`
 	DisplayOrder       int       `gorm:"column:display_order;type:int;default:0"`
 	Status             bool      `gorm:"column:status;type:boolean;default:true"`
-	CreatedAt          time.Time `gorm:"column:created_at;type:timestamp;default:CURRENT_TIMESTAMP;autoCreateTime:milli"`
-	UpdatedAt          time.Time `gorm:"column:updated_at;type:timestamp;default:CURRENT_TIMESTAMP;autoUpdateTime:milli"`
+
+	// Kolom di database
+	CreatedBy uuid.UUID `gorm:"column:created_by;type:uuid;not null"`
+
+	// Relasi → ini yang bikin FK constraint
+	Creator User `gorm:"foreignKey:CreatedBy;references:UserID"`
+
+	CreatedAt time.Time `gorm:"column:created_at;type:timestamp;default:CURRENT_TIMESTAMP;autoCreateTime:milli"`
+	UpdatedAt time.Time `gorm:"column:updated_at;type:timestamp;default:CURRENT_TIMESTAMP;autoUpdateTime:milli"`
 }
 
 func (ServiceType) TableName() string {

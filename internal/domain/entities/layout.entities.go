@@ -17,7 +17,7 @@ type Layout struct {
 	CreatedBy uuid.UUID `gorm:"column:created_by;type:uuid;not null"`
 
 	// Relasi → ini yang bikin FK constraint
-	Creator User `gorm:"foreignKey:CreatedBy;references:UserID"`
+	Creator Users `gorm:"foreignKey:CreatedBy;references:UserID"`
 
 	// Has-many → FK dibuat di tabel layout_positions
 	LayoutPositions []LayoutPosition `gorm:"foreignKey:LayoutID;references:LayoutID"`

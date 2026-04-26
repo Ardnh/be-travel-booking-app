@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type User struct {
+type Users struct {
 	UserID    uuid.UUID `gorm:"column:user_id;type:uuid;primaryKey"`
 	Name      string    `gorm:"column:name;type:varchar;not null"`
 	Email     string    `gorm:"column:email;type:varchar;not null;uniqueIndex"`
@@ -18,6 +18,6 @@ type User struct {
 	UpdatedAt time.Time `gorm:"column:updated_at;type:timestamp;default:CURRENT_TIMESTAMP;autoUpdateTime:milli"`
 }
 
-func (User) TableName() string {
+func (Users) TableName() string {
 	return "users"
 }

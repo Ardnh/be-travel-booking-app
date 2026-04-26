@@ -1,4 +1,4 @@
-package utils
+package jwt_utils
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateToken(secretKey []byte, userID string, userType string) (*string, *string, error) {
+func GenerateToken(secretKey []byte, userID string) (*string, *string, error) {
 
 	token := jwt.New(jwt.SigningMethodHS256)
 
@@ -16,7 +16,6 @@ func GenerateToken(secretKey []byte, userID string, userType string) (*string, *
 	claims := token.Claims.(jwt.MapClaims)
 
 	claims["user_id"] = userID
-	claims["user_type"] = userType
 	claims["exp"] = expiredTime
 
 	// Generate signed token string

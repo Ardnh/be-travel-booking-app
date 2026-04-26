@@ -13,7 +13,7 @@ func Migrate(db *gorm.DB) error {
 	log.Println("Running migrations...")
 
 	err := db.AutoMigrate(
-		entities.User{},
+		entities.Users{},
 		entities.ServiceType{},
 		entities.Layout{},
 		entities.LayoutPosition{},

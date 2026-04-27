@@ -16,6 +16,9 @@ type Users struct {
 	IsActive  bool      `gorm:"column:is_active;type:boolean;not null;default:true"`
 	CreatedAt time.Time `gorm:"column:created_at;type:timestamp;default:CURRENT_TIMESTAMP;autoCreateTime:milli"`
 	UpdatedAt time.Time `gorm:"column:updated_at;type:timestamp;default:CURRENT_TIMESTAMP;autoUpdateTime:milli"`
+
+	// Relationships
+	UserRoles []UsersRole `gorm:"foreignKey:UserID;references:UserID"`
 }
 
 func (Users) TableName() string {

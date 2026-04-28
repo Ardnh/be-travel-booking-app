@@ -48,7 +48,7 @@ func (r *userRepositoryImpl) GetUserByID(ctx context.Context, userID uuid.UUID) 
 	return &user, nil
 }
 
-func (r *userRepositoryImpl) CreateUser(ctx context.Context, user *entities.Users) error {
+func (r *userRepositoryImpl) CreateUser(ctx context.Context, user entities.Users) error {
 	err := r.db.WithContext(ctx).Create(user).Error
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func (r *userRepositoryImpl) CreateUser(ctx context.Context, user *entities.User
 	return nil
 }
 
-func (r *userRepositoryImpl) UpdateUser(ctx context.Context, user *entities.Users) error {
+func (r *userRepositoryImpl) UpdateUser(ctx context.Context, user entities.Users) error {
 	err := r.db.WithContext(ctx).Save(user).Error
 	if err != nil {
 		return err

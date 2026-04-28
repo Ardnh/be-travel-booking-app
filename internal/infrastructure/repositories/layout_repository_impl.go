@@ -42,10 +42,10 @@ func (r *LayoutRepositoryImpl) GetLayoutById(ctx context.Context, layoutID uuid.
 	return &layout, nil
 }
 
-func (r *LayoutRepositoryImpl) GetLayout(ctx context.Context, page int, pageSize int, search string, sortBy string, sortOrder string) ([]*entities.Layout, int64, error) {
+func (r *LayoutRepositoryImpl) GetLayout(ctx context.Context, page int, pageSize int, search string, sortBy string, sortOrder string) ([]entities.Layout, int64, error) {
 
 	var (
-		layouts []*entities.Layout
+		layouts []entities.Layout
 		total   int64
 	)
 
@@ -70,7 +70,7 @@ func (r *LayoutRepositoryImpl) GetLayout(ctx context.Context, page int, pageSize
 
 	// --- Hitung total data dulu (WAJIB sebelum limit)
 	if err := baseQuery.Count(&total).Error; err != nil {
-		return nil, 0, err
+		return []entities.Layout{}, 0, err
 	}
 
 	// --- Validasi sortBy agar tidak SQL injection
@@ -98,13 +98,13 @@ func (r *LayoutRepositoryImpl) GetLayout(ctx context.Context, page int, pageSize
 		Find(&layouts).Error
 
 	if err != nil {
-		return nil, 0, err
+		return []entities.Layout{}, 0, err
 	}
 
 	return layouts, total, nil
 }
 
-func (r *LayoutRepositoryImpl) CreateLayout(ctx context.Context, layout *entities.Layout, layoutPositions []*entities.LayoutPosition) error {
+func (r *LayoutRepositoryImpl) CreateLayout(ctx context.Context, layout entities.Layout, layoutPositions []entities.LayoutPosition) error {
 
 	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 
@@ -127,7 +127,7 @@ func (r *LayoutRepositoryImpl) CreateLayout(ctx context.Context, layout *entitie
 	})
 }
 
-func (r *LayoutRepositoryImpl) UpdateLayout(ctx context.Context, layout *entities.Layout, layoutPositions []*entities.LayoutPosition) error {
+func (r *LayoutRepositoryImpl) UpdateLayout(ctx context.Context, layout entities.Layout, layoutPositions []entities.LayoutPosition) error {
 
 	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 

@@ -69,10 +69,71 @@ func (s *LayoutServiceImpl) GetLayout(ctx context.Context, page int, pageSize in
 
 func (s *LayoutServiceImpl) CreateLayout(ctx context.Context, layout dto.CreateLayoutDTO) error {
 
+	layoutEntity, err := mapper.CreateLayoutDTOToEntity(layout)
+	if err != nil {
+		s.log.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("failed to map layout dto to entity")
+		return errorConst.ErrInternalServer
+	}
+
+	layoutPositionEntities := mapper.CreateLayoutPositionDTOsToEntities(layout.LayoutPositions)
+
+	err = s.LayoutRepository.CreateLayout(ctx, layoutEntity, layoutPositionEntities)
+	if err != nil {
+		s.log.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("failed to create layout")
+		return errorConst.ErrInternalServer
+	}
+
+	return nil
 }
 
 func (s *LayoutServiceImpl) UpdateLayout(ctx context.Context, layoutID string, layout dto.CreateLayoutDTO) error {
 
+	// Get current layout
+	layoutIdUuid, err := uuid.Parse(layoutID)
+	if err != nil {
+		s.log.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("failed to parse layout id")
+		return errorConst.ErrInternalServer
+	}
+
+	currentLayout, err := s.LayoutRepository.GetLayoutById(ctx, layoutIdUuid)
+	if err != nil {
+		s.log.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("failed to get current layout")
+		return errorConst.ErrInternalServer
+	}
+
+	if currentLayout.GridSizeX != layout.GridSizeX {
+		currentLayout.GridSizeX = layout.GridSizeX
+	}
+
+	if currentLayout.GridSizeY != layout.GridSizeY {
+		currentLayout.GridSizeY = layout.GridSizeY
+	}
+
+	if layout.Name != "" {
+		currentLayout.Name = layout.Name
+	}
+
+	if currentLayout.SeatCount != layout.SeatCount {
+		currentLayout.SeatCount = layout.SeatCount
+	}
+
+	err = s.LayoutRepository.UpdateLayout(ctx, layoutIdUuid, currentLayout, nil)
+	if err != nil {
+		s.log.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("failed to update layout")
+		return errorConst.ErrInternalServer
+	}
+
+	return nil
 }
 
 func (s *LayoutServiceImpl) DeleteLayout(ctx context.Context, layoutID string) error {

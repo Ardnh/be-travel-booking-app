@@ -30,9 +30,9 @@ type CreateLayoutDTO struct {
 }
 
 type CreateLayoutPositionDTO struct {
-	Label    string `json:"label" validate:"required"`
-	Row      int    `json:"row" validate:"required,min=1"`
-	Col      int    `json:"column" validate:"required,min=1"`
-	SeatType string `json:"seatType" validate:"required"`
-	IsUsed   bool   `json:"isUsed"`
+	Label        string `json:"label" validate:"required"`
+	Row          int    `json:"row" validate:"required,min=1"`
+	Col          int    `json:"column" validate:"required,min=1"`
+	PositionType string `json:"position_type" validate:"required"`
+	IsUsed       bool   `json:"isUsed"`
 }

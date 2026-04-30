@@ -125,7 +125,8 @@ func (s *LayoutServiceImpl) UpdateLayout(ctx context.Context, layoutID string, l
 		currentLayout.SeatCount = layout.SeatCount
 	}
 
-	err = s.LayoutRepository.UpdateLayout(ctx, layoutIdUuid, currentLayout, nil)
+	layoutPositionEntities := mapper.CreateLayoutPositionDTOsToEntities(layout.LayoutPositions)
+	err = s.LayoutRepository.UpdateLayout(ctx, *currentLayout, layoutPositionEntities)
 	if err != nil {
 		s.log.WithFields(logrus.Fields{
 			"error": err,
@@ -137,5 +138,21 @@ func (s *LayoutServiceImpl) UpdateLayout(ctx context.Context, layoutID string, l
 }
 
 func (s *LayoutServiceImpl) DeleteLayout(ctx context.Context, layoutID string) error {
+	layoutIdUuid, err := uuid.Parse(layoutID)
+	if err != nil {
+		s.log.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("failed to parse layout id")
+		return errorConst.ErrInternalServer
+	}
 
+	err = s.LayoutRepository.DeleteLayout(ctx, layoutIdUuid)
+	if err != nil {
+		s.log.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("failed to delete layout")
+		return errorConst.ErrInternalServer
+	}
+
+	return nil
 }

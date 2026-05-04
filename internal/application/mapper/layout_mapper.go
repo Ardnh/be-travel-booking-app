@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func LayoutsToDTO(layouts []entities.Layout) []*dto.LayoutDTO {
+func LayoutsToDTO(layouts []*entities.Layout) []*dto.LayoutDTO {
 	result := make([]*dto.LayoutDTO, 0, len(layouts))
 	for _, layout := range layouts {
 		result = append(result, LayoutToDTO(layout))
@@ -14,7 +14,7 @@ func LayoutsToDTO(layouts []entities.Layout) []*dto.LayoutDTO {
 	return result
 }
 
-func LayoutToDTO(layout entities.Layout) *dto.LayoutDTO {
+func LayoutToDTO(layout *entities.Layout) *dto.LayoutDTO {
 	return &dto.LayoutDTO{
 		LayoutID:        layout.LayoutID.String(),
 		Name:            layout.Name,

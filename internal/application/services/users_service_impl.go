@@ -33,7 +33,7 @@ func (s *UsersServiceImpl) CreateUser(ctx context.Context, user dto.CreateUserDT
 		Phone:    user.Phone,
 	}
 
-	err := s.userRepository.CreateUser(ctx, userEntity)
+	err := s.userRepository.CreateUser(ctx, *userEntity)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func (s *UsersServiceImpl) UpdateUser(ctx context.Context, userId string, req dt
 		user.Phone = req.Phone
 	}
 
-	err = s.userRepository.UpdateUser(ctx, user)
+	err = s.userRepository.UpdateUser(ctx, *user)
 	if err != nil {
 		s.log.WithFields(logrus.Fields{
 			"user_id": userId,

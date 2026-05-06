@@ -6,14 +6,18 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/ardnh/be-travel-booking-app/internal/application/services"
 	"github.com/ardnh/be-travel-booking-app/internal/config"
 	"github.com/ardnh/be-travel-booking-app/internal/infrastructure/database/postgresql"
 	"github.com/ardnh/be-travel-booking-app/internal/infrastructure/database/redis"
+	"github.com/ardnh/be-travel-booking-app/internal/infrastructure/repositories"
+	"github.com/ardnh/be-travel-booking-app/internal/interfaces/http/handlers"
 	"github.com/ardnh/be-travel-booking-app/internal/interfaces/http/middleware"
 	"github.com/ardnh/be-travel-booking-app/internal/interfaces/http/routes"
 	logger "github.com/ardnh/be-travel-booking-app/internal/utils/logger"
 	"github.com/casbin/casbin/v3"
 	gormadapter "github.com/casbin/gorm-adapter/v3" // tetap sama!
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -30,7 +34,7 @@ func main() {
 	// 1. Load configuration
 	logger := logger.New()
 	cfg := config.LoadConfig()
-	// validator := validator.New()
+	validator := validator.New()
 
 	// 2. Initialize database
 	db, err := postgresql.NewPostgresDB(cfg)
@@ -54,20 +58,31 @@ func main() {
 	}
 	enforcer.LoadPolicy()
 
+	// Repository
+	serviceTypeRepo := repositories.NewServiceTypeRepository(db, redisDb)
+	poolPointRepo := repositories.NewPoolPointRepository(db, redisDb)
+
+	// Service
+	serviceTypeService := services.NewServiceTypeServiceImpl(serviceTypeRepo, logger)
+	poolPointService := services.NewPoolPointServiceImpl(poolPointRepo, logger)
+
+	// Handler
+	serviceTypeHandler := handlers.NewServiceTypeHandler(serviceTypeService, validator, logger)
+	poolPointHandler := handlers.NewPoolPointHandler(poolPointService, validator, logger)
+
 	// 5. Start HTTP server
 	app := fiber.New()
 
 	requestTimer := middleware.NewRequestTimerMiddleware(logger)
 	app.Use(requestTimer.Track())
 
-	// Repository
-	// Service
-	// Handler
-
 	routes.SetupAPIRoutes(
 		app,
 		logger,
 		enforcer,
+		serviceTypeHandler,
+		poolPointHandler,
+		validator,
 	)
 
 	portListen := fmt.Sprintf(":%s", cfg.App.Port)

@@ -1,0 +1,4 @@
+name: travel booking app
+variables:
+  - name: base_url
+    value: ""

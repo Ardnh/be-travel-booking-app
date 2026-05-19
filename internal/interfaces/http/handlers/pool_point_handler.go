@@ -65,7 +65,7 @@ func (h *PoolPointHandler) GetPoolPointsByVendorID(c fiber.Ctx) error {
 }
 
 func (h *PoolPointHandler) CreatePoolPoint(c fiber.Ctx) error {
-	var req dto.CreatePoolPointDTO
+	var req dto.CreatePoolsDTO
 	if err := c.Bind().Body(&req); err != nil {
 		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
 	}
@@ -89,7 +89,7 @@ func (h *PoolPointHandler) UpdatePoolPoint(c fiber.Ctx) error {
 		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, "Invalid pool point ID", err)
 	}
 
-	var req dto.UpdatePoolPointDTO
+	var req dto.UpdatePoolsDTO
 	if err := c.Bind().Body(&req); err != nil {
 		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
 	}

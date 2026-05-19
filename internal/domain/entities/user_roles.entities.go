@@ -18,9 +18,9 @@ type UserRoles struct {
 	CreatedAt  time.Time  `gorm:"autoCreateTime" json:"created_at"`
 
 	// Relations
-	User Users
-	// Vendor *Vendors
-	// Pool   *Pools
+	User   Users
+	Vendor *Vendors
+	Pool   *Pools
 }
 
 func (UserRoles) TableName() string { return "user_roles" }

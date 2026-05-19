@@ -18,10 +18,10 @@ func Migrate(db *gorm.DB) error {
 		&entities.Vendors{},
 		&entities.ServiceTypes{},
 		&entities.Layouts{},
+		&entities.LayoutPositions{},
 
 		// 2. Tabel yang bergantung pada level 1
 		&entities.Pools{},
-		&entities.LayoutPositions{},
 		&entities.UserRoles{},
 
 		// 3. Tabel yang bergantung pada level 2

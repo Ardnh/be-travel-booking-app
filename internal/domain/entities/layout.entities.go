@@ -15,8 +15,8 @@ type Layouts struct {
 	SeatCount int        `gorm:"type:int;not null" json:"seat_count"`
 	CreatedBy *uuid.UUID `gorm:"type:uuid" json:"created_by,omitempty"`
 
-	// // Relations
-	// Positions []LayoutPositions `gorm:"-" json:"positions,omitempty"`
+	// Relations
+	Positions []LayoutPositions `gorm:"foreignKey:LayoutID;references:LayoutID"`
 	// Schedules []Schedules       `gorm:"-" json:"schedules,omitempty"`
 
 	BaseModel

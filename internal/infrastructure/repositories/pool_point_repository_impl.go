@@ -24,8 +24,8 @@ func NewPoolPointRepository(db *gorm.DB, redis *redis.Client) repositories.PoolP
 	}
 }
 
-func (r *poolPointRepositoryImpl) GetPoolPointByID(ctx context.Context, poolID uuid.UUID) (*entities.PoolPoints, error) {
-	var poolPoint entities.PoolPoints
+func (r *poolPointRepositoryImpl) GetPoolPointByID(ctx context.Context, poolID uuid.UUID) (*entities.Pools, error) {
+	var poolPoint entities.Pools
 	err := r.db.WithContext(ctx).Where("pool_id = ?", poolID).First(&poolPoint).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -36,8 +36,8 @@ func (r *poolPointRepositoryImpl) GetPoolPointByID(ctx context.Context, poolID u
 	return &poolPoint, nil
 }
 
-func (r *poolPointRepositoryImpl) GetAllPoolPoints(ctx context.Context) ([]entities.PoolPoints, error) {
-	var poolPoints []entities.PoolPoints
+func (r *poolPointRepositoryImpl) GetAllPoolPoints(ctx context.Context) ([]entities.Pools, error) {
+	var poolPoints []entities.Pools
 	err := r.db.WithContext(ctx).Find(&poolPoints).Error
 	if err != nil {
 		return nil, err
@@ -45,8 +45,8 @@ func (r *poolPointRepositoryImpl) GetAllPoolPoints(ctx context.Context) ([]entit
 	return poolPoints, nil
 }
 
-func (r *poolPointRepositoryImpl) GetPoolPointsByVendorID(ctx context.Context, vendorID uuid.UUID) ([]entities.PoolPoints, error) {
-	var poolPoints []entities.PoolPoints
+func (r *poolPointRepositoryImpl) GetPoolPointsByVendorID(ctx context.Context, vendorID uuid.UUID) ([]entities.Pools, error) {
+	var poolPoints []entities.Pools
 	err := r.db.WithContext(ctx).Where("vendor_id = ?", vendorID).Find(&poolPoints).Error
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (r *poolPointRepositoryImpl) GetPoolPointsByVendorID(ctx context.Context, v
 	return poolPoints, nil
 }
 
-func (r *poolPointRepositoryImpl) CreatePoolPoint(ctx context.Context, poolPoint entities.PoolPoints) error {
+func (r *poolPointRepositoryImpl) CreatePoolPoint(ctx context.Context, poolPoint entities.Pools) error {
 	err := r.db.WithContext(ctx).Create(&poolPoint).Error
 	if err != nil {
 		return err
@@ -62,7 +62,7 @@ func (r *poolPointRepositoryImpl) CreatePoolPoint(ctx context.Context, poolPoint
 	return nil
 }
 
-func (r *poolPointRepositoryImpl) UpdatePoolPoint(ctx context.Context, poolPoint entities.PoolPoints) error {
+func (r *poolPointRepositoryImpl) UpdatePoolPoint(ctx context.Context, poolPoint entities.Pools) error {
 	err := r.db.WithContext(ctx).Save(&poolPoint).Error
 	if err != nil {
 		return err
@@ -71,7 +71,7 @@ func (r *poolPointRepositoryImpl) UpdatePoolPoint(ctx context.Context, poolPoint
 }
 
 func (r *poolPointRepositoryImpl) DeletePoolPoint(ctx context.Context, poolID uuid.UUID) error {
-	err := r.db.WithContext(ctx).Where("pool_id = ?", poolID).Delete(&entities.PoolPoints{}).Error
+	err := r.db.WithContext(ctx).Where("pool_id = ?", poolID).Delete(&entities.Pools{}).Error
 	if err != nil {
 		return err
 	}

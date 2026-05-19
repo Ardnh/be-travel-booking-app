@@ -41,8 +41,8 @@ func (h *LayoutHandler) GetLayoutByID(c fiber.Ctx) error {
 }
 
 func (h *LayoutHandler) GetLayout(c fiber.Ctx) error {
-	page := c.QueryInt("page", 1)
-	pageSize := c.QueryInt("page_size", 30)
+	page := c.Query("page", "1")
+	pageSize := c.Query("page_size", "30")
 	search := c.Query("search")
 	sortBy := c.Query("sort_by", "created_at")
 	sortOrder := c.Query("sort_order", "desc")
@@ -53,12 +53,12 @@ func (h *LayoutHandler) GetLayout(c fiber.Ctx) error {
 	}
 
 	pagination := dto.Pagination{
-		CurrentPage:  page,
-		PageSize:     pageSize,
-		TotalItems:   int(total),
-		TotalPages:   (int(total) + pageSize - 1) / pageSize,
-		HasNext:      page*pageSize < int(total),
-		HasPrevious:  page > 1,
+		CurrentPage: page,
+		PageSize:    pageSize,
+		TotalItems:  int(total),
+		TotalPages:  (int(total) + pageSize - 1) / pageSize,
+		HasNext:     page*pageSize < int(total),
+		HasPrevious: page > 1,
 	}
 
 	return httpResponses.NewSuccessResponseWithPagination(c, fiber.StatusOK, "Layouts retrieved successfully", layouts, pagination)

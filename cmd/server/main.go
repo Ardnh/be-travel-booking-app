@@ -61,14 +61,26 @@ func main() {
 	// Repository
 	serviceTypeRepo := repositories.NewServiceTypeRepository(db, redisDb)
 	poolPointRepo := repositories.NewPoolPointRepository(db, redisDb)
+	vendorRepo := repositories.NewVendorRepository(db, redisDb)
+	layoutRepo := repositories.NewLayoutRepository(db, redisDb)
+	layoutPositionRepo := repositories.NewLayoutPositionRepository(db, redisDb)
+	scheduleRepo := repositories.NewScheduleRepository(db, redisDb)
 
 	// Service
 	serviceTypeService := services.NewServiceTypeServiceImpl(serviceTypeRepo, logger)
 	poolPointService := services.NewPoolPointServiceImpl(poolPointRepo, logger)
+	vendorService := services.NewVendorServiceImpl(vendorRepo, logger)
+	layoutService := services.NewLayoutServiceImpl(layoutRepo, logger)
+	layoutPositionService := services.NewLayoutPositionServiceImpl(layoutPositionRepo, logger)
+	scheduleService := services.NewScheduleServiceImpl(scheduleRepo, logger)
 
 	// Handler
 	serviceTypeHandler := handlers.NewServiceTypeHandler(serviceTypeService, validator, logger)
 	poolPointHandler := handlers.NewPoolPointHandler(poolPointService, validator, logger)
+	vendorHandler := handlers.NewVendorHandler(vendorService, validator, logger)
+	layoutHandler := handlers.NewLayoutHandler(layoutService, validator, logger)
+	layoutPositionHandler := handlers.NewLayoutPositionHandler(layoutPositionService, validator, logger)
+	scheduleHandler := handlers.NewScheduleHandler(scheduleService, validator, logger)
 
 	// 5. Start HTTP server
 	app := fiber.New()
@@ -82,6 +94,10 @@ func main() {
 		enforcer,
 		serviceTypeHandler,
 		poolPointHandler,
+		vendorHandler,
+		layoutHandler,
+		layoutPositionHandler,
+		scheduleHandler,
 		validator,
 	)
 

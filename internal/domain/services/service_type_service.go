@@ -9,8 +9,8 @@ import (
 )
 
 type ServiceTypeService interface {
-	GetServiceTypeByID(ctx context.Context, serviceTypeID uuid.UUID) (*entities.ServiceType, error)
-	GetAllServiceTypes(ctx context.Context) ([]entities.ServiceType, error)
+	GetServiceTypeByID(ctx context.Context, serviceTypeID uuid.UUID) (*entities.ServiceTypes, error)
+	GetAllServiceTypes(ctx context.Context) ([]entities.ServiceTypes, error)
 	CreateServiceType(ctx context.Context, req dto.CreateServiceTypeDTO, createdBy uuid.UUID) error
 	UpdateServiceType(ctx context.Context, serviceTypeID uuid.UUID, req dto.UpdateServiceTypeDTO) error
 	DeleteServiceType(ctx context.Context, serviceTypeID uuid.UUID) error

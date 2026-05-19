@@ -49,7 +49,7 @@ func (s *AuthServiceImpl) Login(ctx context.Context, req dto.LoginRequestDto) (*
 		return nil, errorConst.ErrInternalServer
 	}
 
-	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+	if err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)); err != nil {
 		s.log.WithField("email", req.Email).Warn("invalid credentials provided")
 		return nil, errorConst.ErrUnauthorized
 	}

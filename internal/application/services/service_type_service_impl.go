@@ -24,7 +24,7 @@ func NewServiceTypeServiceImpl(serviceTypeRepository repositories.ServiceTypeRep
 	}
 }
 
-func (s *ServiceTypeServiceImpl) GetServiceTypeByID(ctx context.Context, serviceTypeID uuid.UUID) (*entities.ServiceType, error) {
+func (s *ServiceTypeServiceImpl) GetServiceTypeByID(ctx context.Context, serviceTypeID uuid.UUID) (*entities.ServiceTypes, error) {
 	serviceType, err := s.serviceTypeRepository.GetServiceTypeByID(ctx, serviceTypeID)
 	if err != nil {
 		if errors.Is(err, errorConst.ErrNotFound) {
@@ -39,7 +39,7 @@ func (s *ServiceTypeServiceImpl) GetServiceTypeByID(ctx context.Context, service
 	return serviceType, nil
 }
 
-func (s *ServiceTypeServiceImpl) GetAllServiceTypes(ctx context.Context) ([]entities.ServiceType, error) {
+func (s *ServiceTypeServiceImpl) GetAllServiceTypes(ctx context.Context) ([]entities.ServiceTypes, error) {
 	serviceTypes, err := s.serviceTypeRepository.GetAllServiceTypes(ctx)
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (s *ServiceTypeServiceImpl) GetAllServiceTypes(ctx context.Context) ([]enti
 }
 
 func (s *ServiceTypeServiceImpl) CreateServiceType(ctx context.Context, req dto.CreateServiceTypeDTO, createdBy uuid.UUID) error {
-	serviceType := &entities.ServiceType{
+	serviceType := &entities.ServiceTypes{
 		ServiceTypeID:      uuid.New(),
 		Name:               req.Name,
 		UniqueCode:         req.UniqueCode,

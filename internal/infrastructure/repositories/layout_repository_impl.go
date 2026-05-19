@@ -24,8 +24,8 @@ func NewLayoutRepository(db *gorm.DB, redis *redis.Client) repositories.LayoutRe
 	}
 }
 
-func (r *LayoutRepositoryImpl) GetLayoutById(ctx context.Context, layoutID uuid.UUID) (*entities.Layout, error) {
-	var layout entities.Layout
+func (r *LayoutRepositoryImpl) GetLayoutById(ctx context.Context, layoutID uuid.UUID) (*entities.Layouts, error) {
+	var layout entities.Layouts
 
 	err := r.db.WithContext(ctx).
 		Preload("Creator").
@@ -42,10 +42,10 @@ func (r *LayoutRepositoryImpl) GetLayoutById(ctx context.Context, layoutID uuid.
 	return &layout, nil
 }
 
-func (r *LayoutRepositoryImpl) GetLayout(ctx context.Context, page int, pageSize int, search string, sortBy string, sortOrder string) ([]*entities.Layout, int64, error) {
+func (r *LayoutRepositoryImpl) GetLayout(ctx context.Context, page int, pageSize int, search string, sortBy string, sortOrder string) ([]*entities.Layouts, int64, error) {
 
 	var (
-		layouts []*entities.Layout
+		layouts []*entities.Layouts
 		total   int64
 	)
 
@@ -61,7 +61,7 @@ func (r *LayoutRepositoryImpl) GetLayout(ctx context.Context, page int, pageSize
 
 	// --- Base query TANPA preload (untuk count & filter)
 	baseQuery := r.db.WithContext(ctx).
-		Model(&entities.Layout{})
+		Model(&entities.Layouts{})
 
 	// --- Search (by name)
 	if search != "" {
@@ -104,7 +104,7 @@ func (r *LayoutRepositoryImpl) GetLayout(ctx context.Context, page int, pageSize
 	return layouts, total, nil
 }
 
-func (r *LayoutRepositoryImpl) CreateLayout(ctx context.Context, layout entities.Layout, layoutPositions []entities.LayoutPosition) error {
+func (r *LayoutRepositoryImpl) CreateLayout(ctx context.Context, layout entities.Layouts, layoutPositions []entities.LayoutPositions) error {
 
 	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 
@@ -127,12 +127,12 @@ func (r *LayoutRepositoryImpl) CreateLayout(ctx context.Context, layout entities
 	})
 }
 
-func (r *LayoutRepositoryImpl) UpdateLayout(ctx context.Context, layout entities.Layout, layoutPositions []entities.LayoutPosition) error {
+func (r *LayoutRepositoryImpl) UpdateLayout(ctx context.Context, layout entities.Layouts, layoutPositions []entities.LayoutPositions) error {
 
 	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 
 		// 1. Update parent (hanya kolom perlu)
-		if err := tx.Model(&entities.Layout{}).
+		if err := tx.Model(&entities.Layouts{}).
 			Where("layout_id = ?", layout.LayoutID).
 			Updates(layout).Error; err != nil {
 			return err
@@ -141,7 +141,7 @@ func (r *LayoutRepositoryImpl) UpdateLayout(ctx context.Context, layout entities
 		// 2. Delete semua children lama
 		if err := tx.
 			Where("layout_id = ?", layout.LayoutID).
-			Delete(&entities.LayoutPosition{}).Error; err != nil {
+			Delete(&entities.LayoutPositions{}).Error; err != nil {
 			return err
 		}
 
@@ -165,5 +165,5 @@ func (r *LayoutRepositoryImpl) DeleteLayout(ctx context.Context, layoutID uuid.U
 
 	return r.db.WithContext(ctx).
 		Where("layout_id = ?", layoutID).
-		Delete(&entities.Layout{}).Error
+		Delete(&entities.Layouts{}).Error
 }

@@ -24,7 +24,7 @@ func NewPoolPointServiceImpl(poolPointRepository repositories.PoolPointRepositor
 	}
 }
 
-func (s *PoolPointServiceImpl) GetPoolPointByID(ctx context.Context, poolID uuid.UUID) (*entities.PoolPoint, error) {
+func (s *PoolPointServiceImpl) GetPoolPointByID(ctx context.Context, poolID uuid.UUID) (*entities.Pools, error) {
 	poolPoint, err := s.poolPointRepository.GetPoolPointByID(ctx, poolID)
 	if err != nil {
 		if errors.Is(err, errorConst.ErrNotFound) {
@@ -39,7 +39,7 @@ func (s *PoolPointServiceImpl) GetPoolPointByID(ctx context.Context, poolID uuid
 	return poolPoint, nil
 }
 
-func (s *PoolPointServiceImpl) GetAllPoolPoints(ctx context.Context) ([]entities.PoolPoint, error) {
+func (s *PoolPointServiceImpl) GetAllPoolPoints(ctx context.Context) ([]entities.Pools, error) {
 	poolPoints, err := s.poolPointRepository.GetAllPoolPoints(ctx)
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (s *PoolPointServiceImpl) GetAllPoolPoints(ctx context.Context) ([]entities
 	return poolPoints, nil
 }
 
-func (s *PoolPointServiceImpl) GetPoolPointsByVendorID(ctx context.Context, vendorID uuid.UUID) ([]entities.PoolPoint, error) {
+func (s *PoolPointServiceImpl) GetPoolPointsByVendorID(ctx context.Context, vendorID uuid.UUID) ([]entities.Pools, error) {
 	poolPoints, err := s.poolPointRepository.GetPoolPointsByVendorID(ctx, vendorID)
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func (s *PoolPointServiceImpl) GetPoolPointsByVendorID(ctx context.Context, vend
 	return poolPoints, nil
 }
 
-func (s *PoolPointServiceImpl) CreatePoolPoint(ctx context.Context, req dto.CreatePoolPointDTO) error {
+func (s *PoolPointServiceImpl) CreatePoolPoint(ctx context.Context, req dto.CreatePoolsDTO) error {
 	vendorID, err := uuid.Parse(req.VendorID)
 	if err != nil {
 		s.log.WithFields(logrus.Fields{
@@ -65,7 +65,7 @@ func (s *PoolPointServiceImpl) CreatePoolPoint(ctx context.Context, req dto.Crea
 		return errorConst.ErrBadRequest
 	}
 
-	poolPoint := &entities.PoolPoint{
+	poolPoint := &entities.Pools{
 		PoolID:      uuid.New(),
 		VendorID:    vendorID,
 		Name:        req.Name,
@@ -78,7 +78,7 @@ func (s *PoolPointServiceImpl) CreatePoolPoint(ctx context.Context, req dto.Crea
 		OpenTime:    req.OpenTime,
 		CloseTime:   req.CloseTime,
 		Status:      req.Status,
-		Description: req.Description,
+		Description: *req.Description,
 	}
 
 	err = s.poolPointRepository.CreatePoolPoint(ctx, *poolPoint)
@@ -89,7 +89,7 @@ func (s *PoolPointServiceImpl) CreatePoolPoint(ctx context.Context, req dto.Crea
 	return nil
 }
 
-func (s *PoolPointServiceImpl) UpdatePoolPoint(ctx context.Context, poolID uuid.UUID, req dto.UpdatePoolPointDTO) error {
+func (s *PoolPointServiceImpl) UpdatePoolPoint(ctx context.Context, poolID uuid.UUID, req dto.UpdatePoolsDTO) error {
 	poolPoint, err := s.poolPointRepository.GetPoolPointByID(ctx, poolID)
 	if err != nil {
 		if errors.Is(err, errorConst.ErrNotFound) {
@@ -144,7 +144,7 @@ func (s *PoolPointServiceImpl) UpdatePoolPoint(ctx context.Context, poolID uuid.
 		poolPoint.Status = *req.Status
 	}
 	if req.Description != nil {
-		poolPoint.Description = req.Description
+		poolPoint.Description = *req.Description
 	}
 
 	err = s.poolPointRepository.UpdatePoolPoint(ctx, *poolPoint)

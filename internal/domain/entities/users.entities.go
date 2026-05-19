@@ -1,26 +1,28 @@
 package entities
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 )
 
+// ============================================================
+// User
+// ============================================================
+
 type Users struct {
-	UserID    uuid.UUID `gorm:"column:user_id;type:uuid;primaryKey"`
-	Name      string    `gorm:"column:name;type:varchar;not null"`
-	Email     string    `gorm:"column:email;type:varchar;not null;uniqueIndex"`
-	Password  string    `gorm:"column:password;type:varchar;not null"`
-	Phone     string    `gorm:"column:phone;type:varchar;not null"`
-	AvatarURL string    `gorm:"column:avatar_url;type:varchar;not null"`
-	IsActive  bool      `gorm:"column:is_active;type:boolean;not null;default:true"`
-	CreatedAt time.Time `gorm:"column:created_at;type:timestamp;default:CURRENT_TIMESTAMP;autoCreateTime:milli"`
-	UpdatedAt time.Time `gorm:"column:updated_at;type:timestamp;default:CURRENT_TIMESTAMP;autoUpdateTime:milli"`
+	UserID       uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"user_id"`
+	Name         string    `gorm:"type:varchar(255);not null" json:"name"`
+	Email        string    `gorm:"type:varchar(255);uniqueIndex;not null" json:"email"`
+	PasswordHash string    `gorm:"type:varchar(255);not null" json:"-"`
+	Phone        string    `gorm:"type:varchar(50)" json:"phone"`
+	AvatarURL    string    `gorm:"type:varchar(500)" json:"avatar_url"`
+	IsActive     bool      `gorm:"default:true" json:"is_active"`
 
-	// Relationships
-	UserRoles []UsersRole `gorm:"foreignKey:UserID;references:UserID"`
+	// Relations
+	// Roles []UserRoles
+	// Bookings []Bookings
+	// SeatHolds []SeatHolds
+
+	BaseModel
 }
 
-func (Users) TableName() string {
-	return "users"
-}
+func (Users) TableName() string { return "users" }

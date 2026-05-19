@@ -1,23 +1,28 @@
 package entities
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 )
 
-type LayoutPosition struct {
-	LayoutPositionID uuid.UUID `gorm:"column:layout_position_id;type:uuid;primaryKey"`
-	LayoutID         uuid.UUID `gorm:"column:layout_id;type:uuid;not null;foreignKey:LayoutID;references:LayoutID"`
-	Label            string    `gorm:"column:label;type:varchar;not null"`
-	Row              int       `gorm:"column:row;type:int;not null"`
-	Col              int       `gorm:"column:col;type:int;not null"`
-	PositionType     string    `gorm:"column:position_type;type:varchar;default:'seat'"`
-	IsUsed           bool      `gorm:"column:is_used;type:boolean;default:true"`
-	CreatedAt        time.Time `gorm:"column:created_at;type:timestamp;default:CURRENT_TIMESTAMP;autoCreateTime:milli"`
-	UpdatedAt        time.Time `gorm:"column:updated_at;type:timestamp;default:CURRENT_TIMESTAMP;autoUpdateTime:milli"`
+// ============================================================
+// LayoutPosition
+// ============================================================
+
+type LayoutPositions struct {
+	LayoutPositionID uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"layout_position_id"`
+	LayoutID         uuid.UUID `gorm:"type:uuid;not null;index" json:"layout_id"`
+	Label            string    `gorm:"type:varchar(50);not null" json:"label"`
+	Row              int       `gorm:"type:int;not null" json:"row"`
+	Col              int       `gorm:"type:int;not null" json:"col"`
+	PositionType     string    `gorm:"type:varchar(50);not null" json:"position_type"`
+	IsUsed           bool      `gorm:"default:true" json:"is_used"`
+
+	// // Relations
+	Layout Layouts
+	// BookingSeats []BookingSeats `gorm:"-" json:"booking_seats,omitempty"`
+	// SeatHolds    []SeatHolds    `gorm:"-" json:"seat_holds,omitempty"`
+
+	BaseModel
 }
 
-func (LayoutPosition) TableName() string {
-	return "layout_positions"
-}
+func (LayoutPositions) TableName() string { return "layout_positions" }

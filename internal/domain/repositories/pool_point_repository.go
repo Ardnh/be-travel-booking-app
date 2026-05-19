@@ -8,10 +8,10 @@ import (
 )
 
 type PoolPointRepository interface {
-	GetPoolPointByID(ctx context.Context, poolID uuid.UUID) (*entities.PoolPoint, error)
-	GetAllPoolPoints(ctx context.Context) ([]entities.PoolPoint, error)
-	GetPoolPointsByVendorID(ctx context.Context, vendorID uuid.UUID) ([]entities.PoolPoint, error)
-	CreatePoolPoint(ctx context.Context, poolPoint entities.PoolPoint) error
-	UpdatePoolPoint(ctx context.Context, poolPoint entities.PoolPoint) error
+	GetPoolPointByID(ctx context.Context, poolID uuid.UUID) (*entities.Pools, error)
+	GetAllPoolPoints(ctx context.Context) ([]entities.Pools, error)
+	GetPoolPointsByVendorID(ctx context.Context, vendorID uuid.UUID) ([]entities.Pools, error)
+	CreatePoolPoint(ctx context.Context, poolPoint entities.Pools) error
+	UpdatePoolPoint(ctx context.Context, poolPoint entities.Pools) error
 	DeletePoolPoint(ctx context.Context, poolID uuid.UUID) error
 }

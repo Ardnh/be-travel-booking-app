@@ -24,8 +24,8 @@ func NewServiceTypeRepository(db *gorm.DB, redis *redis.Client) repositories.Ser
 	}
 }
 
-func (r *serviceTypeRepositoryImpl) GetServiceTypeByID(ctx context.Context, serviceTypeID uuid.UUID) (*entities.ServiceType, error) {
-	var serviceType entities.ServiceType
+func (r *serviceTypeRepositoryImpl) GetServiceTypeByID(ctx context.Context, serviceTypeID uuid.UUID) (*entities.ServiceTypes, error) {
+	var serviceType entities.ServiceTypes
 	err := r.db.WithContext(ctx).Where("service_type_id = ?", serviceTypeID).First(&serviceType).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -36,8 +36,8 @@ func (r *serviceTypeRepositoryImpl) GetServiceTypeByID(ctx context.Context, serv
 	return &serviceType, nil
 }
 
-func (r *serviceTypeRepositoryImpl) GetAllServiceTypes(ctx context.Context) ([]entities.ServiceType, error) {
-	var serviceTypes []entities.ServiceType
+func (r *serviceTypeRepositoryImpl) GetAllServiceTypes(ctx context.Context) ([]entities.ServiceTypes, error) {
+	var serviceTypes []entities.ServiceTypes
 	err := r.db.WithContext(ctx).Find(&serviceTypes).Error
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func (r *serviceTypeRepositoryImpl) GetAllServiceTypes(ctx context.Context) ([]e
 	return serviceTypes, nil
 }
 
-func (r *serviceTypeRepositoryImpl) CreateServiceType(ctx context.Context, serviceType entities.ServiceType) error {
+func (r *serviceTypeRepositoryImpl) CreateServiceType(ctx context.Context, serviceType entities.ServiceTypes) error {
 	err := r.db.WithContext(ctx).Create(&serviceType).Error
 	if err != nil {
 		return err
@@ -53,7 +53,7 @@ func (r *serviceTypeRepositoryImpl) CreateServiceType(ctx context.Context, servi
 	return nil
 }
 
-func (r *serviceTypeRepositoryImpl) UpdateServiceType(ctx context.Context, serviceType entities.ServiceType) error {
+func (r *serviceTypeRepositoryImpl) UpdateServiceType(ctx context.Context, serviceType entities.ServiceTypes) error {
 	err := r.db.WithContext(ctx).Save(&serviceType).Error
 	if err != nil {
 		return err
@@ -62,7 +62,7 @@ func (r *serviceTypeRepositoryImpl) UpdateServiceType(ctx context.Context, servi
 }
 
 func (r *serviceTypeRepositoryImpl) DeleteServiceType(ctx context.Context, serviceTypeID uuid.UUID) error {
-	err := r.db.WithContext(ctx).Where("service_type_id = ?", serviceTypeID).Delete(&entities.ServiceType{}).Error
+	err := r.db.WithContext(ctx).Where("service_type_id = ?", serviceTypeID).Delete(&entities.ServiceTypes{}).Error
 	if err != nil {
 		return err
 	}

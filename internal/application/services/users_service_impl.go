@@ -27,10 +27,10 @@ func NewUsersServiceImpl(userRepository repositories.UserRepository, log *logrus
 func (s *UsersServiceImpl) CreateUser(ctx context.Context, user dto.CreateUserDTO) error {
 
 	userEntity := &entities.Users{
-		Name:     user.Name,
-		Email:    user.Email,
-		Password: user.Password,
-		Phone:    user.Phone,
+		Name:         user.Name,
+		Email:        user.Email,
+		PasswordHash: user.Password,
+		Phone:        user.Phone,
 	}
 
 	err := s.userRepository.CreateUser(ctx, *userEntity)

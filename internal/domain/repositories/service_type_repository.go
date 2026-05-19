@@ -8,9 +8,9 @@ import (
 )
 
 type ServiceTypeRepository interface {
-	GetServiceTypeByID(ctx context.Context, serviceTypeID uuid.UUID) (*entities.ServiceType, error)
-	GetAllServiceTypes(ctx context.Context) ([]entities.ServiceType, error)
-	CreateServiceType(ctx context.Context, serviceType entities.ServiceType) error
-	UpdateServiceType(ctx context.Context, serviceType entities.ServiceType) error
+	GetServiceTypeByID(ctx context.Context, serviceTypeID uuid.UUID) (*entities.ServiceTypes, error)
+	GetAllServiceTypes(ctx context.Context) ([]entities.ServiceTypes, error)
+	CreateServiceType(ctx context.Context, serviceType entities.ServiceTypes) error
+	UpdateServiceType(ctx context.Context, serviceType entities.ServiceTypes) error
 	DeleteServiceType(ctx context.Context, serviceTypeID uuid.UUID) error
 }

@@ -137,8 +137,6 @@ func (s *UsersServiceImpl) GetUserProfile(ctx context.Context, userID string) (*
 		roles = append(roles, dto.UserRoleDTO{
 			UserRoleID: ur.UserRoleID.String(),
 			Role:       ur.Role,
-			VendorID:   s.uuidToString(ur.VendorID),
-			PoolID:     s.uuidToString(ur.PoolID),
 		})
 	}
 

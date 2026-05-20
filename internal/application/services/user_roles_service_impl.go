@@ -39,8 +39,6 @@ func (s *UserRolesServiceImpl) GetUserRoleByID(ctx context.Context, userRoleID s
 		UserRoleID: userRole.UserRoleID.String(),
 		UserID:     userRole.UserID.String(),
 		Role:       userRole.Role,
-		VendorID:   s.uuidToString(userRole.VendorID),
-		PoolID:     s.uuidToString(userRole.PoolID),
 	}, nil
 }
 
@@ -62,8 +60,6 @@ func (s *UserRolesServiceImpl) GetUserRolesByUserID(ctx context.Context, userID 
 			UserRoleID: ur.UserRoleID.String(),
 			UserID:     ur.UserID.String(),
 			Role:       ur.Role,
-			VendorID:   s.uuidToString(ur.VendorID),
-			PoolID:     s.uuidToString(ur.PoolID),
 		})
 	}
 	return result, nil
@@ -87,14 +83,13 @@ func (s *UserRolesServiceImpl) GetUserRolesByVendorID(ctx context.Context, vendo
 			UserRoleID: ur.UserRoleID.String(),
 			UserID:     ur.UserID.String(),
 			Role:       ur.Role,
-			VendorID:   s.uuidToString(ur.VendorID),
-			PoolID:     s.uuidToString(ur.PoolID),
 		})
 	}
 	return result, nil
 }
 
 func (s *UserRolesServiceImpl) CreateUserRole(ctx context.Context, req dto.CreateUserRoleDTO) (*dto.UserRoleDTO, error) {
+
 	userUUID, err := uuid.Parse(req.UserID)
 	if err != nil {
 		s.log.WithField("user_id", req.UserID).Error("invalid user ID")
@@ -107,24 +102,6 @@ func (s *UserRolesServiceImpl) CreateUserRole(ctx context.Context, req dto.Creat
 		Role:       req.Role,
 	}
 
-	if req.VendorID != nil {
-		vendorUUID, err := uuid.Parse(*req.VendorID)
-		if err != nil {
-			s.log.WithField("vendor_id", *req.VendorID).Error("invalid vendor ID")
-			return nil, errorConst.ErrBadRequest
-		}
-		userRole.VendorID = &vendorUUID
-	}
-
-	if req.PoolID != nil {
-		poolUUID, err := uuid.Parse(*req.PoolID)
-		if err != nil {
-			s.log.WithField("pool_id", *req.PoolID).Error("invalid pool ID")
-			return nil, errorConst.ErrBadRequest
-		}
-		userRole.PoolID = &poolUUID
-	}
-
 	err = s.userRolesRepository.CreateUserRole(ctx, userRole)
 	if err != nil {
 		return nil, err
@@ -134,8 +111,6 @@ func (s *UserRolesServiceImpl) CreateUserRole(ctx context.Context, req dto.Creat
 		UserRoleID: userRole.UserRoleID.String(),
 		UserID:     userRole.UserID.String(),
 		Role:       userRole.Role,
-		VendorID:   s.uuidToString(userRole.VendorID),
-		PoolID:     s.uuidToString(userRole.PoolID),
 	}, nil
 }
 
@@ -155,24 +130,6 @@ func (s *UserRolesServiceImpl) UpdateUserRole(ctx context.Context, userRoleID st
 		existingRole.Role = *req.Role
 	}
 
-	if req.VendorID != nil {
-		vendorUUID, err := uuid.Parse(*req.VendorID)
-		if err != nil {
-			s.log.WithField("vendor_id", *req.VendorID).Error("invalid vendor ID")
-			return nil, errorConst.ErrBadRequest
-		}
-		existingRole.VendorID = &vendorUUID
-	}
-
-	if req.PoolID != nil {
-		poolUUID, err := uuid.Parse(*req.PoolID)
-		if err != nil {
-			s.log.WithField("pool_id", *req.PoolID).Error("invalid pool ID")
-			return nil, errorConst.ErrBadRequest
-		}
-		existingRole.PoolID = &poolUUID
-	}
-
 	err = s.userRolesRepository.UpdateUserRole(ctx, *existingRole)
 	if err != nil {
 		return nil, err
@@ -182,8 +139,6 @@ func (s *UserRolesServiceImpl) UpdateUserRole(ctx context.Context, userRoleID st
 		UserRoleID: existingRole.UserRoleID.String(),
 		UserID:     existingRole.UserID.String(),
 		Role:       existingRole.Role,
-		VendorID:   s.uuidToString(existingRole.VendorID),
-		PoolID:     s.uuidToString(existingRole.PoolID),
 	}, nil
 }
 

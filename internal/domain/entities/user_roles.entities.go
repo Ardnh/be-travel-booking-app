@@ -10,17 +10,12 @@ import (
 // UserRole
 // ============================================================
 type UserRoles struct {
-	UserRoleID uuid.UUID  `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"user_role_id"`
-	UserID     uuid.UUID  `gorm:"type:uuid;not null;index" json:"user_id"`
-	Role       string     `gorm:"type:varchar(50);not null" json:"role"`
-	VendorID   *uuid.UUID `gorm:"type:uuid;index" json:"vendor_id,omitempty"`
-	PoolID     *uuid.UUID `gorm:"type:uuid;index" json:"pool_id,omitempty"`
-	CreatedAt  time.Time  `gorm:"autoCreateTime" json:"created_at"`
+	UserRoleID uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
+	UserID     uuid.UUID `gorm:"type:uuid;not null;uniqueIndex"`
+	Role       string    `gorm:"type:varchar(50);not null"` // daily_user, admin_platform, platform_owner
+	CreatedAt  time.Time `gorm:"autoCreateTime"`
 
-	// Relations
-	User   Users
-	Vendor *Vendors
-	Pool   *Pools
+	User Users `gorm:"foreignKey:UserID;references:UserID"`
 }
 
 func (UserRoles) TableName() string { return "user_roles" }

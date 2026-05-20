@@ -73,6 +73,10 @@ func HandleError(c fiber.Ctx, err error) error {
 		return NewErrorResponse(c, fiber.StatusUnauthorized, err.Error(), nil)
 	case errors.Is(err, errorsConst.ErrForbidden):
 		return NewErrorResponse(c, fiber.StatusForbidden, err.Error(), nil)
+	case errors.Is(err, errorsConst.ErrBadRequest):
+		return NewErrorResponse(c, fiber.StatusBadRequest, err.Error(), nil)
+	case errors.Is(err, errorsConst.ErrUserAlreadyExists):
+		return NewErrorResponse(c, fiber.ErrBadRequest.Code, err.Error(), nil)
 	default:
 		return NewErrorResponse(c, fiber.StatusInternalServerError, "Internal server error", nil)
 	}

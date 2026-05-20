@@ -63,7 +63,7 @@ func LoadConfig() *Config {
 		App: AppConfig{
 			Env:       getEnv("APP_ENV", "development"),
 			Port:      getEnv("APP_PORT", "8080"),
-			JWTSecret: getEnv("APP_JWT_SECRET", ""),
+			JWTSecret: getEnv("APP_JWT_SECRET", "2974384a-b730-4284-a063-b522f76d82fb"),
 		},
 	}
 

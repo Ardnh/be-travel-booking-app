@@ -1,0 +1,22 @@
+info:
+  name: Update Vendor
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{base_url}}/api/v1/vendors/:id"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Updated Vendor",
+        "description": "Updated description"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

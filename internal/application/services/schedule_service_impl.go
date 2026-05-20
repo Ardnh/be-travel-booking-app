@@ -60,9 +60,9 @@ func (s *ScheduleServiceImpl) CreateSchedule(ctx context.Context, req dto.Create
 	schedule, err := mapper.CreateScheduleDTOToEntity(req)
 	if err != nil {
 		s.log.WithFields(logrus.Fields{
-			"vendor_id":    req.VendorID,
+			"vendor_id":       req.VendorID,
 			"service_type_id": req.ServiceTypeID,
-			"error":        err,
+			"error":           err,
 		}).Error("failed to map schedule dto to entity")
 		return errorConst.ErrInternalServer
 	}
@@ -97,7 +97,7 @@ func (s *ScheduleServiceImpl) UpdateSchedule(ctx context.Context, scheduleID uui
 		schedule.DepartureTime = *req.DepartureTime
 	}
 	if req.EstimatedArrivalTime != nil {
-		schedule.EstimatedArrivalTime = req.EstimatedArrivalTime
+		schedule.EstimatedArrivalTime = *req.EstimatedArrivalTime
 	}
 	if req.PricePerSeat != nil {
 		schedule.PricePerSeat = *req.PricePerSeat

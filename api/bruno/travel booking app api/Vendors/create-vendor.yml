@@ -1,0 +1,22 @@
+info:
+  name: Create Vendor
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{base_url}}/api/v1/vendors"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Vendor Name",
+        "description": "Vendor description"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

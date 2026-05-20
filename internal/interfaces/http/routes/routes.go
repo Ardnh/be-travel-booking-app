@@ -3,63 +3,107 @@ package routes
 import (
 	// middleware "github.com/ardnh/be-travel-booking-app/internal/interfaces/http/middleware"
 	"github.com/ardnh/be-travel-booking-app/internal/interfaces/http/handlers"
+	"github.com/ardnh/be-travel-booking-app/internal/interfaces/http/middleware"
+	"github.com/ardnh/be-travel-booking-app/pkg/constants"
 	"github.com/casbin/casbin/v3"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
 	"github.com/sirupsen/logrus"
 )
 
-func SetupAPIRoutes(app *fiber.App, log *logrus.Logger, enforcer *casbin.Enforcer, serviceTypeHandler *handlers.ServiceTypeHandler, poolPointHandler *handlers.PoolPointHandler, vendorHandler *handlers.VendorHandler, layoutHandler *handlers.LayoutHandler, layoutPositionHandler *handlers.LayoutPositionHandler, scheduleHandler *handlers.ScheduleHandler, validator *validator.Validate) {
+func SetupAPIRoutes(app *fiber.App, log *logrus.Logger, enforcer *casbin.Enforcer, serviceTypeHandler *handlers.ServiceTypeHandler, poolPointHandler *handlers.PoolPointHandler, vendorHandler *handlers.VendorHandler, layoutHandler *handlers.LayoutHandler, layoutPositionHandler *handlers.LayoutPositionHandler, scheduleHandler *handlers.ScheduleHandler, authHandler *handlers.AuthHandler, userRolesHandler *handlers.UserRolesHandler, usersHandler *handlers.UsersHandler, bookingHandler *handlers.BookingHandler, validator *validator.Validate) {
 
 	// Middleware
-	// casbinMiddleware := middleware.NewCasbinMiddleware(enforcer)
-	// authMiddleware := middleware.NewAuthMiddleware()
+	casbinMw := middleware.NewCasbinMiddleware(enforcer, log)
+	authMiddleware := middleware.NewAuthMiddleware()
 
 	// API v1 group
 	api := app.Group("/api/v1")
 
+	// PUBLIC API
+	// Auth routes
+	api.Post("/auth/login", authHandler.Login)
+	api.Post("/auth/register", authHandler.Register)
+
+	// PRIVATE API
 	// Service Type routes
-	api.Get("/service-types", serviceTypeHandler.GetAllServiceTypes)
-	api.Get("/service-types/:id", serviceTypeHandler.GetServiceTypeByID)
-	api.Post("/service-types", serviceTypeHandler.CreateServiceType)
-	api.Put("/service-types/:id", serviceTypeHandler.UpdateServiceType)
-	api.Delete("/service-types/:id", serviceTypeHandler.DeleteServiceType)
+	serviceTypes := api.Group("/service-types", authMiddleware.Authenticate())
+	serviceTypes.Get("/", casbinMw.Authorize(constants.ResourceServiceTypes, constants.ActionRead), serviceTypeHandler.GetAllServiceTypes)
+	serviceTypes.Get("/:id", casbinMw.Authorize(constants.ResourceServiceTypes, constants.ActionRead), serviceTypeHandler.GetServiceTypeByID)
+	serviceTypes.Post("/", casbinMw.Authorize(constants.ResourceServiceTypes, constants.ActionCreate), serviceTypeHandler.CreateServiceType)
+	serviceTypes.Put("/:id", casbinMw.Authorize(constants.ResourceServiceTypes, constants.ActionUpdate), serviceTypeHandler.UpdateServiceType)
+	serviceTypes.Delete("/:id", casbinMw.Authorize(constants.ResourceServiceTypes, constants.ActionDelete), serviceTypeHandler.DeleteServiceType)
 
 	// Pool Point routes
-	api.Get("/pool-points", poolPointHandler.GetAllPoolPoints)
-	api.Get("/pool-points/:id", poolPointHandler.GetPoolPointByID)
-	api.Get("/vendors/:vendorId/pool-points", poolPointHandler.GetPoolPointsByVendorID)
-	api.Post("/pool-points", poolPointHandler.CreatePoolPoint)
-	api.Put("/pool-points/:id", poolPointHandler.UpdatePoolPoint)
-	api.Delete("/pool-points/:id", poolPointHandler.DeletePoolPoint)
+	poolPoints := api.Group("/pool-points", authMiddleware.Authenticate())
+	poolPoints.Get("/", casbinMw.Authorize(constants.ResourcePoolPoints, constants.ActionRead), poolPointHandler.GetAllPoolPoints)
+	poolPoints.Get("/:id", casbinMw.Authorize(constants.ResourcePoolPoints, constants.ActionRead), poolPointHandler.GetPoolPointByID)
+	poolPoints.Post("/", casbinMw.Authorize(constants.ResourcePoolPoints, constants.ActionCreate), poolPointHandler.CreatePoolPoint)
+	poolPoints.Put("/:id", casbinMw.Authorize(constants.ResourcePoolPoints, constants.ActionUpdate), poolPointHandler.UpdatePoolPoint)
+	poolPoints.Delete("/:id", casbinMw.Authorize(constants.ResourcePoolPoints, constants.ActionDelete), poolPointHandler.DeletePoolPoint)
+
+	poolPoints.Get("/vendors/:vendorId/pool-points", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourcePoolPoints, constants.ActionRead), poolPointHandler.GetPoolPointsByVendorID)
 
 	// Vendor routes
-	api.Get("/vendors", vendorHandler.GetAllVendors)
-	api.Get("/vendors/:id", vendorHandler.GetVendorByID)
-	api.Post("/vendors", vendorHandler.CreateVendor)
-	api.Put("/vendors/:id", vendorHandler.UpdateVendor)
-	api.Delete("/vendors/:id", vendorHandler.DeleteVendor)
+	vendors := api.Group("/vendors", authMiddleware.Authenticate())
+	vendors.Get("/", casbinMw.Authorize(constants.ResourceVendors, constants.ActionRead), vendorHandler.GetAllVendors)
+	vendors.Get("/:id", casbinMw.Authorize(constants.ResourceVendors, constants.ActionRead), vendorHandler.GetVendorByID)
+	vendors.Post("/", casbinMw.Authorize(constants.ResourceVendors, constants.ActionCreate), vendorHandler.CreateVendor)
+	vendors.Put("/:id", casbinMw.Authorize(constants.ResourceVendors, constants.ActionUpdate), vendorHandler.UpdateVendor)
+	vendors.Delete("/:id", casbinMw.Authorize(constants.ResourceVendors, constants.ActionDelete), vendorHandler.DeleteVendor)
 
 	// Layout routes
-	api.Get("/layouts", layoutHandler.GetLayout)
-	api.Get("/layouts/:id", layoutHandler.GetLayoutByID)
-	api.Post("/layouts", layoutHandler.CreateLayout)
-	api.Put("/layouts/:id", layoutHandler.UpdateLayout)
-	api.Delete("/layouts/:id", layoutHandler.DeleteLayout)
+	layouts := api.Group("/layouts", authMiddleware.Authenticate())
+	layouts.Get("/", casbinMw.Authorize(constants.ResourceLayouts, constants.ActionRead), layoutHandler.GetLayout)
+	layouts.Get("/:id", casbinMw.Authorize(constants.ResourceLayouts, constants.ActionRead), layoutHandler.GetLayoutByID)
+	layouts.Post("/", casbinMw.Authorize(constants.ResourceLayouts, constants.ActionCreate), layoutHandler.CreateLayout)
+	layouts.Put("/:id", casbinMw.Authorize(constants.ResourceLayouts, constants.ActionUpdate), layoutHandler.UpdateLayout)
+	layouts.Delete("/:id", casbinMw.Authorize(constants.ResourceLayouts, constants.ActionDelete), layoutHandler.DeleteLayout)
 
 	// Layout Position routes
-	api.Get("/layout-positions", layoutPositionHandler.GetAllLayoutPositions)
-	api.Get("/layout-positions/:id", layoutPositionHandler.GetLayoutPositionByID)
-	api.Get("/layouts/:layoutId/layout-positions", layoutPositionHandler.GetLayoutPositionsByLayoutID)
-	api.Post("/layouts/:layoutId/layout-positions", layoutPositionHandler.CreateLayoutPosition)
-	api.Put("/layout-positions/:id", layoutPositionHandler.UpdateLayoutPosition)
-	api.Delete("/layout-positions/:id", layoutPositionHandler.DeleteLayoutPosition)
+	layoutPositions := api.Group("/layout-positions", authMiddleware.Authenticate())
+	layoutPositions.Get("/", casbinMw.Authorize(constants.ResourceLayoutPositions, constants.ActionRead), layoutPositionHandler.GetAllLayoutPositions)
+	layoutPositions.Get("/:id", casbinMw.Authorize(constants.ResourceLayoutPositions, constants.ActionRead), layoutPositionHandler.GetLayoutPositionByID)
+	layoutPositions.Put("/:id", casbinMw.Authorize(constants.ResourceLayoutPositions, constants.ActionUpdate), layoutPositionHandler.UpdateLayoutPosition)
+	layoutPositions.Delete("/:id", casbinMw.Authorize(constants.ResourceLayoutPositions, constants.ActionDelete), layoutPositionHandler.DeleteLayoutPosition)
+
+	layouts.Get("/:layoutId/layout-positions", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourceLayoutPositions, constants.ActionRead), layoutPositionHandler.GetLayoutPositionsByLayoutID)
+	layouts.Post("/:layoutId/layout-positions", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourceLayoutPositions, constants.ActionCreate), layoutPositionHandler.CreateLayoutPosition)
 
 	// Schedule routes
-	api.Get("/schedules", scheduleHandler.GetAllSchedules)
-	api.Get("/schedules/:id", scheduleHandler.GetScheduleByID)
-	api.Get("/vendors/:vendorId/schedules", scheduleHandler.GetSchedulesByVendorID)
-	api.Post("/schedules", scheduleHandler.CreateSchedule)
-	api.Put("/schedules/:id", scheduleHandler.UpdateSchedule)
-	api.Delete("/schedules/:id", scheduleHandler.DeleteSchedule)
+	schedules := api.Group("/schedules", authMiddleware.Authenticate())
+	schedules.Get("/", casbinMw.Authorize(constants.ResourceSchedules, constants.ActionRead), scheduleHandler.GetAllSchedules)
+	schedules.Get("/:id", casbinMw.Authorize(constants.ResourceSchedules, constants.ActionRead), scheduleHandler.GetScheduleByID)
+	schedules.Post("/", casbinMw.Authorize(constants.ResourceSchedules, constants.ActionCreate), scheduleHandler.CreateSchedule)
+	schedules.Put("/:id", casbinMw.Authorize(constants.ResourceSchedules, constants.ActionUpdate), scheduleHandler.UpdateSchedule)
+	schedules.Delete("/:id", casbinMw.Authorize(constants.ResourceSchedules, constants.ActionDelete), scheduleHandler.DeleteSchedule)
+
+	vendors.Get("/:vendorId/schedules", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourceSchedules, constants.ActionRead), scheduleHandler.GetSchedulesByVendorID)
+
+	// User Roles routes
+	userRoles := api.Group("/user-roles", authMiddleware.Authenticate())
+	userRoles.Get("/:id", casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionRead), userRolesHandler.GetUserRoleByID)
+	userRoles.Post("/", casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionCreate), userRolesHandler.CreateUserRole)
+	userRoles.Put("/:id", casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionUpdate), userRolesHandler.UpdateUserRole)
+	userRoles.Delete("/:id", casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionDelete), userRolesHandler.DeleteUserRole)
+
+	api.Get("/users/:userId/user-roles", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionRead), userRolesHandler.GetUserRolesByUserID)
+	vendors.Get("/:vendorId/user-roles", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionRead), userRolesHandler.GetUserRolesByVendorID)
+
+	// Users routes
+	users := api.Group("/users", authMiddleware.Authenticate())
+	users.Post("/", usersHandler.CreateUser)
+	users.Put("/:id", casbinMw.Authorize(constants.ResourceUsers, constants.ActionUpdate), usersHandler.UpdateUser)
+	users.Delete("/:id", casbinMw.Authorize(constants.ResourceUsers, constants.ActionDelete), usersHandler.DeleteUser)
+	users.Get("/profile", casbinMw.Authorize(constants.ResourceProfile, constants.ActionRead), usersHandler.GetUserProfile)
+
+	// Booking routes
+	bookings := api.Group("/bookings", authMiddleware.Authenticate())
+	bookings.Get("/:id", casbinMw.Authorize(constants.ResourceBookings, constants.ActionRead), bookingHandler.GetBookingByID)
+	bookings.Post("/", casbinMw.Authorize(constants.ResourceBookings, constants.ActionCreate), bookingHandler.CreateBooking)
+	bookings.Put("/:id", casbinMw.Authorize(constants.ResourceBookings, constants.ActionUpdate), bookingHandler.UpdateBooking)
+	bookings.Delete("/:id", casbinMw.Authorize(constants.ResourceBookings, constants.ActionDelete), bookingHandler.DeleteBooking)
+
+	api.Get("/users/:userId/bookings", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourceBookings, constants.ActionRead), bookingHandler.GetBookingsByUserID)
+	api.Get("/schedules/:scheduleId/bookings", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourceBookings, constants.ActionRead), bookingHandler.GetBookingsByScheduleID)
 }

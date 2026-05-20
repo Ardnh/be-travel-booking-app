@@ -1,0 +1,22 @@
+info:
+  name: Update Schedule
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{base_url}}/api/v1/schedules/:id"
+  body:
+    type: json
+    data: |-
+      {
+        "departure_time": "2024-01-01T09:00:00Z",
+        "arrival_time": "2024-01-01T13:00:00Z"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

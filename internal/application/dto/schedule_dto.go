@@ -45,6 +45,7 @@ type CreateScheduleDTO struct {
 	VehicleType          string   `json:"vehicle_type" validate:"required"`
 	DepartureDate        string   `json:"departure_date" validate:"required"`
 	DepartureTime        string   `json:"departure_time" validate:"required"`
+	CreatedBy            string   `json:"created_by" validate:"required"`
 	EstimatedArrivalTime *string  `json:"estimated_arrival_time"`
 	PricePerSeat         *float64 `json:"price_per_seat" validate:"required"`
 	TotalSeat            *int     `json:"total_seat" validate:"required"`
@@ -61,6 +62,6 @@ type UpdateScheduleDTO struct {
 	TotalSeat            *int     `json:"total_seat"`
 	AvailableSeat        *int     `json:"available_seat"`
 	Status               *string  `json:"status"`
-	ActualDepartureTime *string  `json:"actual_departure_time"`
+	ActualDepartureTime  *string  `json:"actual_departure_time"`
 	DepartedBy           *string  `json:"departed_by"`
 }

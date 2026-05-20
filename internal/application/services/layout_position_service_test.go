@@ -259,10 +259,10 @@ func TestUpdateLayoutPosition_Success(t *testing.T) {
 	}
 
 	req := dto.UpdateLayoutPositionDTO{
-		Label:    strPtr("B1"),
-		Row:      intPtr(2),
-		Col:      intPtr(1),
-		IsUsed:   boolPtr(false),
+		Label:  strPtr("B1"),
+		Row:    intPtr(2),
+		Col:    intPtr(1),
+		IsUsed: boolPtr(false),
 	}
 
 	mockRepo.On("GetLayoutPositionByID", mock.Anything, layoutPosID).Return(existing, nil)
@@ -351,14 +351,6 @@ func TestDeleteLayoutPosition_Error(t *testing.T) {
 }
 
 // ─── Helpers ───────────────────────────────────────────
-
-func strPtr(s string) *string {
-	return &s
-}
-
-func intPtr(i int) *int {
-	return &i
-}
 
 func boolPtr(b bool) *bool {
 	return &b

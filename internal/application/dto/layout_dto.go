@@ -11,23 +11,23 @@ type LayoutDTO struct {
 }
 
 type Pagination struct {
-	CurrentPage int `json:"current_page"`
-	PageSize    int `json:"page_size"`
-	TotalItems  int `json:"total_items"`
-	TotalPages  int `json:"total_pages"`
+	CurrentPage int  `json:"current_page"`
+	PageSize    int  `json:"page_size"`
+	TotalItems  int  `json:"total_items"`
+	TotalPages  int  `json:"total_pages"`
 	HasNext     bool `json:"has_next"`
 	HasPrevious bool `json:"has_previous"`
 }
 
-type LayoutPositionDTO struct {
-	LayoutPositionID string `json:"layout_position_id"`
-	LayoutID         string `json:"layout_id"`
-	Label            string `json:"label"`
-	Row              int    `json:"row"`
-	Col              int    `json:"col"`
-	PositionType     string `json:"positionType"`
-	IsUsed           bool   `json:"isUsed"`
-}
+// type LayoutPositionDTO struct {
+// 	LayoutPositionID string `json:"layout_position_id"`
+// 	LayoutID         string `json:"layout_id"`
+// 	Label            string `json:"label"`
+// 	Row              int    `json:"row"`
+// 	Col              int    `json:"col"`
+// 	PositionType     string `json:"positionType"`
+// 	IsUsed           bool   `json:"isUsed"`
+// }
 
 type CreateLayoutDTO struct {
 	Name            string                    `json:"name" validate:"required"`
@@ -38,10 +38,11 @@ type CreateLayoutDTO struct {
 	LayoutPositions []CreateLayoutPositionDTO `json:"layoutPositions"`
 }
 
-type CreateLayoutPositionDTO struct {
-	Label        string `json:"label" validate:"required"`
-	Row          int    `json:"row" validate:"required,min=1"`
-	Col          int    `json:"column" validate:"required,min=1"`
-	PositionType string `json:"position_type" validate:"required"`
-	IsUsed       bool   `json:"isUsed"`
-}
+// type CreateLayoutPositionDTO struct {
+// 	LayoutDTO    string `json:"layoutDTO" validate:"required"`
+// 	Label        string `json:"label" validate:"required"`
+// 	Row          int    `json:"row" validate:"required,min=1"`
+// 	Col          int    `json:"column" validate:"required,min=1"`
+// 	PositionType string `json:"position_type" validate:"required"`
+// 	IsUsed       bool   `json:"isUsed"`
+// }

@@ -1,0 +1,22 @@
+info:
+  name: Update User Role
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{base_url}}/api/v1/user-roles/:id"
+  body:
+    type: json
+    data: |-
+      {
+        "role": "updated-role",
+        "vendor_id": "uuid-here"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

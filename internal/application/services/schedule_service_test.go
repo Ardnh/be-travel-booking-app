@@ -65,18 +65,18 @@ func TestGetScheduleByID_Success(t *testing.T) {
 
 	scheduleID := uuid.New()
 	existing := &entities.Schedules{
-		ScheduleID:     scheduleID,
-		VehicleType:    "Bus",
-		DepartureDate:  "2026-06-01",
-		DepartureTime:  "08:00:00",
-		PricePerSeat:   100000,
-		TotalSeat:      40,
-		AvailableSeat:  35,
-		Status:         "scheduled",
-		VendorID:       uuid.New(),
-		ServiceTypeID:  uuid.New(),
-		LayoutID:       uuid.New(),
-		OriginPoolID:   uuid.New(),
+		ScheduleID:        scheduleID,
+		VehicleType:       "Bus",
+		DepartureDate:     "2026-06-01",
+		DepartureTime:     "08:00:00",
+		PricePerSeat:      100000,
+		TotalSeat:         40,
+		AvailableSeat:     35,
+		Status:            "scheduled",
+		VendorID:          uuid.New(),
+		ServiceTypeID:     uuid.New(),
+		LayoutID:          uuid.New(),
+		OriginPoolID:      uuid.New(),
 		DestinationPoolID: uuid.New(),
 	}
 
@@ -217,7 +217,7 @@ func TestCreateSchedule_Success(t *testing.T) {
 	originPoolID := uuid.New()
 	destPoolID := uuid.New()
 
-	price := 100000
+	price := 100000.0
 	totalSeat := 40
 	availableSeat := 35
 	status := "scheduled"
@@ -290,8 +290,8 @@ func TestUpdateSchedule_Success(t *testing.T) {
 
 	status := "delayed"
 	req := dto.UpdateScheduleDTO{
-		VehicleType: strPtr("Executive Bus"),
-		PricePerSeat: float64Ptr(125000),
+		VehicleType:   strPtr("Executive Bus"),
+		PricePerSeat:  float64Ptr(125000),
 		AvailableSeat: intPtr(30),
 		Status:        &status,
 	}
@@ -380,10 +380,6 @@ func TestDeleteSchedule_Error(t *testing.T) {
 }
 
 // ─── Helpers ─────────────────────────────────────────
-
-func strPtr(s string) *string {
-	return &s
-}
 
 func intPtr(i int) *int {
 	return &i

@@ -1,0 +1,44 @@
+Definisi Role
+1. Daily User (Penumpang)
+    Akun customer yang memesan tiket. Fokus pada pengalaman booking dan monitoring perjalanan pribadi.
+    Cari jadwal & rute travel
+    Pilih kursi (jika service type mengaktifkan)
+    Isi data penumpang & alamat sesuai service type
+    Booking & bayar via payment gateway
+    Lihat current transaction (booking aktif)
+    Lihat history transaction
+    Lihat & download e-ticket
+
+2. Business Owner (Pemilik Vendor)
+    Pemilik usaha travel. Fokus pada monitoring, kontrol, dan keputusan bisnis.
+    Lihat semua pool, schedule & booking semua pool
+    Lihat revenue & payout vendor
+    Membuat dan menonaktifkan Admin Owner & Admin Pool
+    Assign admin ke pool tertentu
+    Download manifest dan export data semua pool
+
+3. Admin Owner (Staf Pusat Vendor)
+    Asisten owner / admin kantor pusat. Fokus pada setup sistem dan kontrol operasional vendor.
+    Buat / edit Pool Point dan Schedule
+    Monitor semua jadwal semua pool
+    Lihat semua booking dan download manifest semua pool
+    Export data booking semua pool
+    Membuat Admin Pool dan assign ke pool
+
+4. Admin Pool (Staf Operasional Pool)
+    Staf operasional di pool tertentu. Fokus pada eksekusi harian.
+    Buat schedule untuk pool yang di-assign
+    Lihat booking dan manifest penumpang dari pool yang di-assign
+    Download manifest (PDF & Excel)
+    Update status check-in penumpang
+    Input Manual Booking
+    Tutup Keberangkatan (ubah status jadwal → departed)
+
+5. Platform Owner (Super Admin OTA)
+    Pemilik platform. Akses global ke semua data dan konfigurasi sistem.
+    Kelola service_type (buat, edit, nonaktifkan)
+    Verifikasi atau suspend vendor
+    Lihat semua transaksi semua vendor
+    Lihat komisi & payout per vendor
+    Monitoring sistem global
+    Kelola layout tempat duduk (template global)

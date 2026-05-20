@@ -1,16 +1,17 @@
 package mapper
 
 import (
+	"strings"
+
 	"github.com/ardnh/be-travel-booking-app/internal/application/dto"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/entities"
 	"github.com/google/uuid"
-	"strings"
 )
 
 func ScheduleToDTO(schedule *entities.Schedules) *dto.ScheduleDTO {
 	estimatedArrival := ""
-	if schedule.EstimatedArrivalTime != nil {
-		estimatedArrival = *schedule.EstimatedArrivalTime
+	if schedule.EstimatedArrivalTime != "" {
+		estimatedArrival = schedule.EstimatedArrivalTime
 	}
 	actualDeparture := ""
 	if schedule.ActualDepartureTime != nil {
@@ -76,7 +77,7 @@ func SchedulesToDTO(schedules []entities.Schedules) []*dto.ScheduleDTO {
 	return result
 }
 
-func CreateScheduleDTOToEntity(req dto.CreateScheduleDTO, createdBy uuid.UUID) (entities.Schedules, error) {
+func CreateScheduleDTOToEntity(req dto.CreateScheduleDTO) (entities.Schedules, error) {
 	layoutID, err := uuid.Parse(req.LayoutID)
 	if err != nil {
 		return entities.Schedules{}, err
@@ -116,6 +117,11 @@ func CreateScheduleDTOToEntity(req dto.CreateScheduleDTO, createdBy uuid.UUID) (
 	if req.Status != nil && *req.Status != "" {
 		status = *req.Status
 		status = strings.ToLower(strings.TrimSpace(status))
+	}
+
+	createdBy, err := uuid.Parse(req.CreatedBy)
+	if err != nil {
+		return entities.Schedules{}, err
 	}
 
 	return entities.Schedules{

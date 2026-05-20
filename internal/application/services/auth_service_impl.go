@@ -6,34 +6,39 @@ import (
 
 	"github.com/ardnh/be-travel-booking-app/internal/application/dto"
 	"github.com/ardnh/be-travel-booking-app/internal/config"
+	"github.com/ardnh/be-travel-booking-app/internal/domain/entities"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/repositories"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/services"
-	casbin_utils "github.com/ardnh/be-travel-booking-app/internal/utils/casbin"
 	jwt_utils "github.com/ardnh/be-travel-booking-app/internal/utils/jwt"
+	"github.com/ardnh/be-travel-booking-app/pkg/constants"
 	errorConst "github.com/ardnh/be-travel-booking-app/pkg/errors"
 	"github.com/casbin/casbin/v3"
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthServiceImpl struct {
-	userRepository repositories.UserRepository
-	log            *logrus.Logger
-	appConfig      *config.Config
-	casbinEnforcer *casbin.Enforcer
+	userRepository      repositories.UserRepository
+	userRolesRepository repositories.UserRolesRepository
+	log                 *logrus.Logger
+	appConfig           *config.Config
+	casbinEnforcer      *casbin.Enforcer
 }
 
 func NewAuthService(
 	userRepository repositories.UserRepository,
+	userRolesRepository repositories.UserRolesRepository,
 	log *logrus.Logger,
 	appConfig *config.Config,
 	casbinEnforcer *casbin.Enforcer,
 ) services.AuthService {
 	return &AuthServiceImpl{
-		userRepository: userRepository,
-		log:            log,
-		appConfig:      appConfig,
-		casbinEnforcer: casbinEnforcer,
+		userRepository:      userRepository,
+		userRolesRepository: userRolesRepository,
+		log:                 log,
+		appConfig:           appConfig,
+		casbinEnforcer:      casbinEnforcer,
 	}
 }
 
@@ -64,13 +69,76 @@ func (s *AuthServiceImpl) Login(ctx context.Context, req dto.LoginRequestDto) (*
 		return nil, errorConst.ErrInternalServer
 	}
 
-	permissions := casbin_utils.GetUserPermissions(s.casbinEnforcer, user.UserID.String())
-
 	s.log.WithField("user_id", user.UserID).Info("login successful")
 
 	return &dto.LoginResponseDto{
-		Token:       *token,
-		ExpireDate:  *expiredTimeISO,
-		Permissions: permissions,
+		Token:      *token,
+		ExpireDate: *expiredTimeISO,
 	}, nil
+}
+
+func (s *AuthServiceImpl) Register(ctx context.Context, req dto.RegisterRequestDto) (*dto.RegisterResponseDto, error) {
+	existingUser, err := s.userRepository.GetUserByEmail(ctx, req.Email)
+	if err != nil && !errors.Is(err, errorConst.ErrNotFound) {
+		s.log.WithFields(logrus.Fields{
+			"email": req.Email,
+			"error": err,
+		}).Error("failed to check existing user")
+		return nil, errorConst.ErrNotFound
+	}
+
+	if existingUser != nil {
+		s.log.WithField("email", req.Email).Warn("registration attempt with existing email")
+		return nil, errorConst.ErrUserAlreadyExists
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		s.log.WithField("email", req.Email).Error("failed to hash password")
+		return nil, errorConst.ErrInternalServer
+	}
+
+	user := entities.Users{
+		UserID:       uuid.New(),
+		Name:         req.Name,
+		Email:        req.Email,
+		PasswordHash: string(hashedPassword),
+		Phone:        req.Phone,
+	}
+
+	err = s.userRepository.CreateUser(ctx, user)
+	if err != nil {
+		s.log.WithFields(logrus.Fields{
+			"email": req.Email,
+			"error": err,
+		}).Error("failed to create user")
+		return nil, errorConst.ErrInternalServer
+	}
+
+	// Create user roles
+	userRoles := entities.UserRoles{
+		UserID: user.UserID,
+		Role:   constants.RoleDailyUser,
+	}
+	err = s.userRolesRepository.CreateUserRole(ctx, userRoles)
+	if err != nil {
+		s.log.WithFields(logrus.Fields{
+			"email": req.Email,
+			"error": err,
+		}).Error("failed to create user roles")
+		return nil, errorConst.ErrInternalServer
+	}
+
+	// Add role grouping to Casbin
+	_, err = s.casbinEnforcer.AddGroupingPolicy(user.UserID.String(), constants.RoleDailyUser)
+	if err != nil {
+		s.log.WithFields(logrus.Fields{
+			"email":  req.Email,
+			"userID": user.UserID,
+			"error":  err,
+		}).Error("failed to add casbin grouping policy")
+		return nil, errorConst.ErrInternalServer
+	}
+
+	return nil, nil
 }

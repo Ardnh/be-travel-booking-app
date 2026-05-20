@@ -9,6 +9,7 @@ import (
 // ============================================================
 type Vendors struct {
 	VendorID            uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"vendor_id"`
+	OwnerUserID         uuid.UUID `gorm:"type:uuid;not null;index" json:"owner_user_id"`
 	BusinessName        string    `gorm:"type:varchar(255);not null" json:"business_name"`
 	OwnerName           string    `gorm:"type:varchar(255);not null" json:"owner_name"`
 	Description         string    `gorm:"type:text" json:"description"`

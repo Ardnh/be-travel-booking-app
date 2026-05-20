@@ -1,0 +1,24 @@
+info:
+  name: Create Schedule
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{base_url}}/api/v1/schedules"
+  body:
+    type: json
+    data: |-
+      {
+        "departure_time": "2024-01-01T08:00:00Z",
+        "arrival_time": "2024-01-01T12:00:00Z",
+        "vendor_id": "uuid-here",
+        "pool_id": "uuid-here"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

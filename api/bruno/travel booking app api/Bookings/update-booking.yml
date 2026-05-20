@@ -1,0 +1,24 @@
+info:
+  name: Update Booking
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{base_url}}/api/v1/bookings/:id"
+  body:
+    type: json
+    data: |-
+      {
+        "passenger_name": "Updated Name",
+        "passenger_phone": "081234567890",
+        "seat_count": 3,
+        "payment_method": "credit_card"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

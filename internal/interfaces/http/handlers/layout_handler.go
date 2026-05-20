@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strconv"
+
 	"github.com/ardnh/be-travel-booking-app/internal/application/dto"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/services"
 	httpResponses "github.com/ardnh/be-travel-booking-app/internal/interfaces/http/responses"
@@ -47,18 +49,28 @@ func (h *LayoutHandler) GetLayout(c fiber.Ctx) error {
 	sortBy := c.Query("sort_by", "created_at")
 	sortOrder := c.Query("sort_order", "desc")
 
-	layouts, total, err := h.layoutService.GetLayout(c.Context(), page, pageSize, search, sortBy, sortOrder)
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
+	}
+
+	pageSizeInt, err := strconv.Atoi(pageSize)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
+	}
+
+	layouts, total, err := h.layoutService.GetLayout(c.Context(), pageInt, pageSizeInt, search, sortBy, sortOrder)
 	if err != nil {
 		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
 	}
 
 	pagination := dto.Pagination{
-		CurrentPage: page,
-		PageSize:    pageSize,
+		CurrentPage: pageInt,
+		PageSize:    pageSizeInt,
 		TotalItems:  int(total),
-		TotalPages:  (int(total) + pageSize - 1) / pageSize,
-		HasNext:     page*pageSize < int(total),
-		HasPrevious: page > 1,
+		TotalPages:  (int(total) + pageSizeInt - 1) / pageSizeInt,
+		HasNext:     pageInt*pageSizeInt < int(total),
+		HasPrevious: pageInt > 1,
 	}
 
 	return httpResponses.NewSuccessResponseWithPagination(c, fiber.StatusOK, "Layouts retrieved successfully", layouts, pagination)

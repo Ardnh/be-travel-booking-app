@@ -1,0 +1,32 @@
+info:
+  name: Create Pool Point
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{base_url}}/api/v1/pool-points"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Pool Point Name",
+        "slug": "pool-slug",
+        "address": "Pool address",
+        "city": "City",
+        "province": "Province",
+        "latitude": -6.2088,
+        "longitude": 106.8456,
+        "open_time": "08:00",
+        "close_time": "18:00",
+        "status": "active",
+        "vendor_id": "",
+        "description": "Pool point description"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

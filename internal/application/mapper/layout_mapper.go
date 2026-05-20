@@ -30,22 +30,6 @@ func LayoutToDTO(layout *entities.Layouts) *dto.LayoutDTO {
 	}
 }
 
-func LayoutPositionsToDTO(layoutPositions []entities.LayoutPositions) []*dto.LayoutPositionDTO {
-	result := make([]*dto.LayoutPositionDTO, 0, len(layoutPositions))
-	for _, position := range layoutPositions {
-		result = append(result, &dto.LayoutPositionDTO{
-			LayoutPositionID: position.LayoutPositionID.String(),
-			LayoutID:         position.LayoutID.String(),
-			Label:            position.Label,
-			Row:              position.Row,
-			Col:              position.Col,
-			PositionType:     position.PositionType,
-			IsUsed:           position.IsUsed,
-		})
-	}
-	return result
-}
-
 func CreateLayoutDTOToEntity(layout dto.CreateLayoutDTO) (entities.Layouts, error) {
 	createdByUUID, err := uuid.Parse(layout.CreatedBy)
 	if err != nil {

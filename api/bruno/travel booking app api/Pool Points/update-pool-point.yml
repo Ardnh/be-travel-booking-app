@@ -1,0 +1,22 @@
+info:
+  name: Update Pool Point
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{base_url}}/api/v1/pool-points/:id"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Updated Pool Point",
+        "address": "Updated address"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

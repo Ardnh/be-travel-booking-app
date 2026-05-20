@@ -1,0 +1,28 @@
+info:
+  name: Create Booking
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{base_url}}/api/v1/bookings"
+  body:
+    type: json
+    data: |-
+      {
+        "user_id": "",
+        "schedule_id": "",
+        "passenger_name": "John Doe",
+        "passenger_phone": "08123456789",
+        "pickup_address": "Jakarta",
+        "dropoff_address": "Bandung",
+        "seat_count": 2,
+        "price_per_seat": 150000
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

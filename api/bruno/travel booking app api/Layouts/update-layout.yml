@@ -1,0 +1,23 @@
+info:
+  name: Update Layout
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{base_url}}/api/v1/layouts/:id"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Updated Layout",
+        "gridSizeX": 12,
+        "gridSizeY": 6
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

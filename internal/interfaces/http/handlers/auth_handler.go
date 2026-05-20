@@ -27,7 +27,7 @@ func NewAuthHandler(authService services.AuthService, validator *validator.Valid
 func (h *AuthHandler) Login(c fiber.Ctx) error {
 	var req dto.LoginRequestDto
 	if err := c.Bind().Body(&req); err != nil {
-		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
+		return httpResponses.HandleError(c, err)
 	}
 
 	if err := h.validator.Struct(&req); err != nil {
@@ -36,8 +36,26 @@ func (h *AuthHandler) Login(c fiber.Ctx) error {
 
 	result, err := h.authService.Login(c.Context(), req)
 	if err != nil {
-		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
+		return httpResponses.HandleError(c, err)
 	}
 
 	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Login successful", result)
+}
+
+func (h *AuthHandler) Register(c fiber.Ctx) error {
+	var req dto.RegisterRequestDto
+	if err := c.Bind().Body(&req); err != nil {
+		return httpResponses.HandleError(c, err)
+	}
+
+	if err := h.validator.Struct(&req); err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, validator_utils.FormatValidationErrors(err))
+	}
+
+	result, err := h.authService.Register(c.Context(), req)
+	if err != nil {
+		return httpResponses.HandleError(c, err)
+	}
+
+	return httpResponses.NewSuccessResponse(c, fiber.StatusCreated, "Register successful", result)
 }

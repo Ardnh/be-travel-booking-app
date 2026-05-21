@@ -9,6 +9,7 @@ import (
 
 type VendorRepository interface {
 	GetVendorByID(ctx context.Context, vendorID uuid.UUID) (*entities.Vendors, error)
+	GetVendorByOwnerUserID(ctx context.Context, ownerUserID uuid.UUID) (*entities.Vendors, error)
 	GetAllVendors(ctx context.Context) ([]entities.Vendors, error)
 	CreateVendor(ctx context.Context, vendor entities.Vendors) error
 	UpdateVendor(ctx context.Context, vendor entities.Vendors) error

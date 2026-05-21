@@ -39,6 +39,21 @@ func (s *VendorServiceImpl) GetVendorByID(ctx context.Context, vendorID uuid.UUI
 	return vendor, nil
 }
 
+func (s *VendorServiceImpl) GetVendorByOwnerUserID(ctx context.Context, ownerUserID uuid.UUID) (*entities.Vendors, error) {
+	vendor, err := s.vendorRepository.GetVendorByOwnerUserID(ctx, ownerUserID)
+	if err != nil {
+		if errors.Is(err, errorConst.ErrNotFound) {
+			s.log.WithFields(logrus.Fields{
+				"owner_user_id": ownerUserID,
+				"error":         err,
+			}).Error("vendor not found for owner user")
+			return nil, errorConst.ErrNotFound
+		}
+		return nil, err
+	}
+	return vendor, nil
+}
+
 func (s *VendorServiceImpl) GetAllVendors(ctx context.Context) ([]entities.Vendors, error) {
 	vendors, err := s.vendorRepository.GetAllVendors(ctx)
 	if err != nil {

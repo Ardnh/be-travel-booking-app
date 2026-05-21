@@ -10,7 +10,7 @@ http:
     type: json
     data: |-
       {
-        "owner_user_id": "550e8400-e29b-41d4-a716-446655440000",
+        "owner_user_id": "3c4c2c2b-1a8a-4ae1-a34b-692bfe60d5bd",
         "business_name": "Bali Adventure Tours",
         "owner_name": "Muhammad Ardan",
         "description": "Penyedia jasa travel dan tour terpercaya di Bali",

@@ -40,6 +40,21 @@ func (h *VendorHandler) GetVendorByID(c fiber.Ctx) error {
 	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Vendor retrieved successfully", vendor)
 }
 
+func (h *VendorHandler) GetVendorByOwnerUserID(c fiber.Ctx) error {
+	id := c.Params("id")
+	ownerUserID, err := uuid.Parse(id)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, "Invalid owner user ID", err)
+	}
+
+	vendor, err := h.vendorService.GetVendorByOwnerUserID(c.Context(), ownerUserID)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
+	}
+
+	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Vendor retrieved successfully", vendor)
+}
+
 func (h *VendorHandler) GetAllVendors(c fiber.Ctx) error {
 	vendors, err := h.vendorService.GetAllVendors(c.Context())
 	if err != nil {

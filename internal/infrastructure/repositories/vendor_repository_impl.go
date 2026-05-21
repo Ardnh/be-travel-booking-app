@@ -36,6 +36,18 @@ func (r *vendorRepositoryImpl) GetVendorByID(ctx context.Context, vendorID uuid.
 	return &vendor, nil
 }
 
+func (r *vendorRepositoryImpl) GetVendorByOwnerUserID(ctx context.Context, ownerUserID uuid.UUID) (*entities.Vendors, error) {
+	var vendor entities.Vendors
+	err := r.db.WithContext(ctx).Where("owner_user_id = ?", ownerUserID).First(&vendor).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errorConst.ErrNotFound
+		}
+		return nil, err
+	}
+	return &vendor, nil
+}
+
 func (r *vendorRepositoryImpl) GetAllVendors(ctx context.Context) ([]entities.Vendors, error) {
 	var vendors []entities.Vendors
 	err := r.db.WithContext(ctx).Find(&vendors).Error

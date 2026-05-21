@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{base_url}}/api/v1/pool-points"
+  url: "{{base_url}}/pool-points"
   body:
     type: json
     data: |-
@@ -20,7 +20,7 @@ http:
         "open_time": "08:00",
         "close_time": "18:00",
         "status": "active",
-        "vendor_id": "",
+        "vendor_id": "b699db7b-a668-4d32-9e0b-e3dde04de6d2",
         "description": "Pool point description"
       }
   auth: inherit

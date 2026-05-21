@@ -5,13 +5,22 @@ info:
 
 http:
   method: POST
-  url: "{{base_url}}/api/v1/vendors"
+  url: "{{base_url}}/vendors"
   body:
     type: json
     data: |-
       {
-        "name": "Vendor Name",
-        "description": "Vendor description"
+        "owner_user_id": "550e8400-e29b-41d4-a716-446655440000",
+        "business_name": "Bali Adventure Tours",
+        "owner_name": "Muhammad Ardan",
+        "description": "Penyedia jasa travel dan tour terpercaya di Bali",
+        "founded_year": 2020,
+        "phone_number": "+6281234567890",
+        "email": "info@baliadventure.com",
+        "head_office_address": "Jl. Sunset Road No. 88, Kuta, Bali",
+        "logo_url": "https://example.com/logo.png",
+        "banner_url": "https://example.com/banner.jpg",
+        "legal_document_number": "NIB-1234567890"
       }
   auth: inherit
 

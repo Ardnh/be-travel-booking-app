@@ -14,9 +14,9 @@ type PoolMembers struct {
 	Role         string    `gorm:"type:varchar(50);not null"` // admin, operator, cashier
 	CreatedAt    time.Time `gorm:"autoCreateTime"`
 
-	User   Users   `gorm:"foreignKey:UserID;references:UserID"`
-	Pool   Pools   `gorm:"foreignKey:PoolID;references:PoolID"`
-	Vendor Vendors `gorm:"foreignKey:VendorID;references:VendorID"`
+	User   Users
+	Pool   Pools
+	Vendor Vendors
 }
 
 func (PoolMembers) TableName() string { return "pool_members" }

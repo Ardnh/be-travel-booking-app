@@ -2,6 +2,7 @@ package dto
 
 type CreateVendorDTO struct {
 	BusinessName        string  `json:"business_name" validate:"required"`
+	OwnerUserID         string  `json:"owner_user_id" validate:"required"`
 	OwnerName           string  `json:"owner_name" validate:"required"`
 	Description         string  `json:"description"`
 	FoundedYear         int     `json:"founded_year"`

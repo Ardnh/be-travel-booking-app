@@ -48,8 +48,15 @@ func (s *VendorServiceImpl) GetAllVendors(ctx context.Context) ([]entities.Vendo
 }
 
 func (s *VendorServiceImpl) CreateVendor(ctx context.Context, req dto.CreateVendorDTO) error {
-	vendor := &entities.Vendors{
+
+	ownerUserId, err := uuid.Parse(req.OwnerUserID)
+	if err != nil {
+		return err
+	}
+
+	vendor := entities.Vendors{
 		VendorID:          uuid.New(),
+		OwnerUserID:       ownerUserId,
 		BusinessName:      req.BusinessName,
 		OwnerName:         req.OwnerName,
 		Description:       req.Description,
@@ -64,10 +71,12 @@ func (s *VendorServiceImpl) CreateVendor(ctx context.Context, req dto.CreateVend
 		vendor.LegalDocumentNumber = *req.LegalDocumentNumber
 	}
 
-	err := s.vendorRepository.CreateVendor(ctx, *vendor)
-	if err != nil {
-		return err
+	errCreate := s.vendorRepository.CreateVendor(ctx, vendor)
+	if errCreate != nil {
+		return errCreate
 	}
+
+	// Update user roles
 
 	return nil
 }

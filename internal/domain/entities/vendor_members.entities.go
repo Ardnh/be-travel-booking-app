@@ -13,8 +13,8 @@ type VendorMembers struct {
 	Role           string    `gorm:"type:varchar(50);not null"` // owner, admin, staff
 	CreatedAt      time.Time `gorm:"autoCreateTime"`
 
-	User   Users   `gorm:"foreignKey:UserID;references:UserID"`
-	Vendor Vendors `gorm:"foreignKey:VendorID;references:VendorID"`
+	User   Users
+	Vendor Vendors
 }
 
 func (VendorMembers) TableName() string { return "vendor_members" }

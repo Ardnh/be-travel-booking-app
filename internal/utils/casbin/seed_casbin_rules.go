@@ -16,6 +16,7 @@ func SeedCasbinRules(enforcer *casbin.Enforcer) error {
 
 	// === Policies per role ===
 	policies := [][]string{
+
 		// daily_user
 		{constants.RoleDailyUser, constants.ResourceProfile, constants.ActionRead},
 		{constants.RoleDailyUser, constants.ResourceProfile, constants.ActionUpdate},
@@ -25,9 +26,9 @@ func SeedCasbinRules(enforcer *casbin.Enforcer) error {
 		{constants.RoleDailyUser, constants.ResourcePoolPoints, constants.ActionRead},
 		{constants.RoleDailyUser, constants.ResourceLayouts, constants.ActionRead},
 		{constants.RoleDailyUser, constants.ResourceLayoutPositions, constants.ActionRead},
+		{constants.RoleDailyUser, constants.ResourceVendors, constants.ActionCreate},
 
 		// business_owner
-		{constants.RoleBusinessOwner, constants.ResourceVendors, constants.ActionCreate},
 		{constants.RoleBusinessOwner, constants.ResourceVendors, constants.ActionUpdate},
 		{constants.RoleBusinessOwner, constants.ResourceVendors, constants.ActionDelete},
 		{constants.RoleBusinessOwner, constants.ResourceSchedules, constants.ActionCreate},

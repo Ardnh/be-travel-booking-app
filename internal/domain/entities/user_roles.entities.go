@@ -15,7 +15,7 @@ type UserRoles struct {
 	Role       string    `gorm:"type:varchar(50);not null"` // daily_user, admin_platform, platform_owner
 	CreatedAt  time.Time `gorm:"autoCreateTime"`
 
-	User Users `gorm:"foreignKey:UserID;references:UserID"`
+	User Users
 }
 
 func (UserRoles) TableName() string { return "user_roles" }

@@ -8,18 +8,21 @@ import (
 	"github.com/ardnh/be-travel-booking-app/internal/domain/entities"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/repositories"
 	errorConst "github.com/ardnh/be-travel-booking-app/pkg/errors"
+	"github.com/casbin/casbin/v3"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 )
 
 type VendorServiceImpl struct {
 	vendorRepository repositories.VendorRepository
+	casbinEnforcer   *casbin.Enforcer
 	log              *logrus.Logger
 }
 
-func NewVendorServiceImpl(vendorRepository repositories.VendorRepository, log *logrus.Logger) *VendorServiceImpl {
+func NewVendorServiceImpl(vendorRepository repositories.VendorRepository, casbinEnforcer *casbin.Enforcer, log *logrus.Logger) *VendorServiceImpl {
 	return &VendorServiceImpl{
 		vendorRepository: vendorRepository,
+		casbinEnforcer:   casbinEnforcer,
 		log:              log,
 	}
 }
@@ -91,7 +94,7 @@ func (s *VendorServiceImpl) CreateVendor(ctx context.Context, req dto.CreateVend
 		return errCreate
 	}
 
-	// Update user roles
+	s.casbinEnforcer.LoadPolicy()
 
 	return nil
 }

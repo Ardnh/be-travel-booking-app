@@ -32,7 +32,7 @@ type Pagination struct {
 }
 
 // Success response
-func NewSuccessResponse(c fiber.Ctx, statusCode int, message string, data interface{}) error {
+func NewSuccessResponse(c fiber.Ctx, statusCode int, message string, data any) error {
 	return c.Status(statusCode).JSON(Response{
 		Success: true,
 		Message: message,

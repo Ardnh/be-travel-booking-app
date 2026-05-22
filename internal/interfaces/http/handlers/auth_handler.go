@@ -52,10 +52,10 @@ func (h *AuthHandler) Register(c fiber.Ctx) error {
 		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, validator_utils.FormatValidationErrors(err))
 	}
 
-	result, err := h.authService.Register(c.Context(), req)
+	_, err := h.authService.Register(c.Context(), req)
 	if err != nil {
 		return httpResponses.HandleError(c, err)
 	}
 
-	return httpResponses.NewSuccessResponse(c, fiber.StatusCreated, "Register successful", result)
+	return httpResponses.NewSuccessResponse(c, fiber.StatusCreated, "Register successful", nil)
 }

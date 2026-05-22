@@ -19,6 +19,7 @@ import (
 	logger "github.com/ardnh/be-travel-booking-app/internal/utils/logger" // tetap sama!
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/cors"
 )
 
 func main() {
@@ -72,7 +73,7 @@ func main() {
 	// Service
 	serviceTypeService := services.NewServiceTypeServiceImpl(serviceTypeRepo, logger)
 	poolPointService := services.NewPoolPointServiceImpl(poolPointRepo, logger)
-	vendorService := services.NewVendorServiceImpl(vendorRepo, logger)
+	vendorService := services.NewVendorServiceImpl(vendorRepo, enforcer, logger)
 	layoutService := services.NewLayoutServiceImpl(layoutRepo, logger)
 	layoutPositionService := services.NewLayoutPositionServiceImpl(layoutPositionRepo, logger)
 	scheduleService := services.NewScheduleServiceImpl(scheduleRepo, logger)
@@ -98,6 +99,13 @@ func main() {
 
 	requestTimer := middleware.NewRequestTimerMiddleware(logger)
 	app.Use(requestTimer.Track())
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+	}))
 
 	routes.SetupAPIRoutes(
 		app,

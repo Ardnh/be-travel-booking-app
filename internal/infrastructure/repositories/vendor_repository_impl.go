@@ -7,6 +7,7 @@ import (
 	"github.com/ardnh/be-travel-booking-app/internal/domain/entities"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/repositories"
 	errorConst "github.com/ardnh/be-travel-booking-app/pkg/errors"
+	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -57,14 +58,30 @@ func (r *vendorRepositoryImpl) GetAllVendors(ctx context.Context) ([]entities.Ve
 	return vendors, nil
 }
 
+// Repository
 func (r *vendorRepositoryImpl) CreateVendor(ctx context.Context, vendor entities.Vendors) error {
-	err := r.db.WithContext(ctx).Create(&vendor).Error
-	if err != nil {
-		return err
-	}
-	return nil
-}
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 
+		if err := tx.Create(&vendor).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Where("ptype = ? AND v0 = ? AND v1 = ?", "g", vendor.OwnerUserID, "daily_user").
+			Delete(&gormadapter.CasbinRule{}).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Create(&gormadapter.CasbinRule{
+			Ptype: "g",
+			V0:    vendor.OwnerUserID.String(),
+			V1:    "business_owner",
+		}).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
 func (r *vendorRepositoryImpl) UpdateVendor(ctx context.Context, vendor entities.Vendors) error {
 	err := r.db.WithContext(ctx).Save(&vendor).Error
 	if err != nil {

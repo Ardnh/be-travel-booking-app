@@ -19,6 +19,18 @@ runtime:
   variables:
     - name: base_url
       value: http://127.0.0.1:8080/api/v1
+  scripts:
+    - type: after-response
+      code: bru.setEnvVar("token", res.body.data.token);
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: res.body.data.token
+        method: jsonq
+      variable:
+        name: token
+        scope: runtime
 
 settings:
   encodeUrl: true

@@ -17,59 +17,101 @@ func SeedCasbinRules(enforcer *casbin.Enforcer) error {
 	// === Policies per role ===
 	policies := [][]string{
 
-		// ─── daily_user ───────────────────────────────────────────────
-		{constants.RoleDailyUser, constants.ResourceProfile, constants.ActionRead},
-		{constants.RoleDailyUser, constants.ResourceProfile, constants.ActionUpdate},
+		// ─── platform_owner ──────────────────────────────────────────
+		// Service Type, Layout, Layout Position, User Roles
+		{constants.RolePlatformOwner, constants.ResourceProfile, constants.ActionRead},
 
-		{constants.RoleDailyUser, constants.ResourceServiceTypes, constants.ActionRead},
+		{constants.RolePlatformOwner, constants.ResourceServiceTypes, constants.ActionRead},
+		{constants.RolePlatformOwner, constants.ResourceServiceTypes, constants.ActionCreate},
+		{constants.RolePlatformOwner, constants.ResourceServiceTypes, constants.ActionUpdate},
+		{constants.RolePlatformOwner, constants.ResourceServiceTypes, constants.ActionDelete},
 
-		{constants.RoleDailyUser, constants.ResourceVendors, constants.ActionRead},
-		{constants.RoleDailyUser, constants.ResourceVendors, constants.ActionCreate}, // register vendor
+		{constants.RolePlatformOwner, constants.ResourceVendors, constants.ActionRead},
+		{constants.RolePlatformOwner, constants.ResourceVendors, constants.ActionUpdate},
+		{constants.RolePlatformOwner, constants.ResourceVendors, constants.ActionDelete},
 
-		{constants.RoleDailyUser, constants.ResourceSchedules, constants.ActionRead},
+		{constants.RolePlatformOwner, constants.ResourceSchedules, constants.ActionRead},
 
-		{constants.RoleDailyUser, constants.ResourcePoolPoints, constants.ActionRead},
+		{constants.RolePlatformOwner, constants.ResourceBookings, constants.ActionRead},
 
-		{constants.RoleDailyUser, constants.ResourceLayouts, constants.ActionRead},
+		{constants.RolePlatformOwner, constants.ResourceUserRoles, constants.ActionRead},
+		{constants.RolePlatformOwner, constants.ResourceUserRoles, constants.ActionCreate},
+		{constants.RolePlatformOwner, constants.ResourceUserRoles, constants.ActionUpdate},
+		{constants.RolePlatformOwner, constants.ResourceUserRoles, constants.ActionDelete},
 
-		{constants.RoleDailyUser, constants.ResourceLayoutPositions, constants.ActionRead},
+		{constants.RolePlatformOwner, constants.ResourceLayouts, constants.ActionRead},
+		{constants.RolePlatformOwner, constants.ResourceLayouts, constants.ActionCreate},
+		{constants.RolePlatformOwner, constants.ResourceLayouts, constants.ActionUpdate},
+		{constants.RolePlatformOwner, constants.ResourceLayouts, constants.ActionDelete},
 
-		{constants.RoleDailyUser, constants.ResourceBookings, constants.ActionCreate},
-		{constants.RoleDailyUser, constants.ResourceBookings, constants.ActionRead},
+		{constants.RolePlatformOwner, constants.ResourceLayoutPositions, constants.ActionRead},
+		{constants.RolePlatformOwner, constants.ResourceLayoutPositions, constants.ActionCreate},
+		{constants.RolePlatformOwner, constants.ResourceLayoutPositions, constants.ActionUpdate},
+		{constants.RolePlatformOwner, constants.ResourceLayoutPositions, constants.ActionDelete},
+
+		{constants.RolePlatformOwner, constants.ResourcePoolPoints, constants.ActionRead},
+
+		{constants.RolePlatformOwner, constants.ResourceUsers, constants.ActionCreate},
+		{constants.RolePlatformOwner, constants.ResourceUsers, constants.ActionUpdate},
+		{constants.RolePlatformOwner, constants.ResourceUsers, constants.ActionDelete},
 
 		// ─── business_owner ──────────────────────────────────────────
+		// Vendor, Pool Points, Vendor, Schedule, Booking
 		{constants.RoleBusinessOwner, constants.ResourceProfile, constants.ActionRead},
 
+		// Vendors
 		{constants.RoleBusinessOwner, constants.ResourceVendors, constants.ActionRead},
 		{constants.RoleBusinessOwner, constants.ResourceVendors, constants.ActionUpdate},
 		{constants.RoleBusinessOwner, constants.ResourceVendors, constants.ActionDelete},
 
+		// Pool Points
 		{constants.RoleBusinessOwner, constants.ResourcePoolPoints, constants.ActionRead},
 		{constants.RoleBusinessOwner, constants.ResourcePoolPoints, constants.ActionCreate},
 		{constants.RoleBusinessOwner, constants.ResourcePoolPoints, constants.ActionUpdate},
 		{constants.RoleBusinessOwner, constants.ResourcePoolPoints, constants.ActionDelete},
 
+		// Scehedule
 		{constants.RoleBusinessOwner, constants.ResourceSchedules, constants.ActionRead},
 		{constants.RoleBusinessOwner, constants.ResourceSchedules, constants.ActionCreate},
 		{constants.RoleBusinessOwner, constants.ResourceSchedules, constants.ActionUpdate},
 		{constants.RoleBusinessOwner, constants.ResourceSchedules, constants.ActionDelete},
 
+		// Booking
 		{constants.RoleBusinessOwner, constants.ResourceBookings, constants.ActionRead},
-
-		{constants.RoleBusinessOwner, constants.ResourceLayouts, constants.ActionRead},
-		{constants.RoleBusinessOwner, constants.ResourceLayouts, constants.ActionCreate},
-		{constants.RoleBusinessOwner, constants.ResourceLayouts, constants.ActionUpdate},
-		{constants.RoleBusinessOwner, constants.ResourceLayouts, constants.ActionDelete},
-
-		{constants.RoleBusinessOwner, constants.ResourceLayoutPositions, constants.ActionRead},
-		{constants.RoleBusinessOwner, constants.ResourceLayoutPositions, constants.ActionCreate},
-		{constants.RoleBusinessOwner, constants.ResourceLayoutPositions, constants.ActionUpdate},
-		{constants.RoleBusinessOwner, constants.ResourceLayoutPositions, constants.ActionDelete},
 
 		{constants.RoleBusinessOwner, constants.ResourceUserRoles, constants.ActionRead},
 		{constants.RoleBusinessOwner, constants.ResourceUserRoles, constants.ActionCreate},
 		{constants.RoleBusinessOwner, constants.ResourceUserRoles, constants.ActionUpdate},
 		{constants.RoleBusinessOwner, constants.ResourceUserRoles, constants.ActionDelete},
+
+		// ─── daily_user ───────────────────────────────────────────────
+		// Booking
+		// Users
+		{constants.RoleDailyUser, constants.ResourceProfile, constants.ActionRead},
+		{constants.RoleDailyUser, constants.ResourceProfile, constants.ActionUpdate},
+
+		// Service Types
+		{constants.RoleDailyUser, constants.ResourceServiceTypes, constants.ActionRead},
+
+		// Vendors
+		{constants.RoleDailyUser, constants.ResourceVendors, constants.ActionRead},
+		{constants.RoleDailyUser, constants.ResourceVendors, constants.ActionCreate}, // register vendor
+
+		// Schedules
+		{constants.RoleDailyUser, constants.ResourceSchedules, constants.ActionRead},
+
+		// Pool Points
+		{constants.RoleDailyUser, constants.ResourcePoolPoints, constants.ActionRead},
+
+		// Layouts
+		{constants.RoleDailyUser, constants.ResourceLayouts, constants.ActionRead},
+
+		// Layout Positions
+		{constants.RoleDailyUser, constants.ResourceLayoutPositions, constants.ActionRead},
+
+		// Bookings
+		{constants.RoleDailyUser, constants.ResourceBookings, constants.ActionCreate},
+		{constants.RoleDailyUser, constants.ResourceBookings, constants.ActionRead},
 
 		// ─── admin_owner ─────────────────────────────────────────────
 		{constants.RoleAdminBusiness, constants.ResourceProfile, constants.ActionRead},
@@ -137,47 +179,6 @@ func SeedCasbinRules(enforcer *casbin.Enforcer) error {
 		{constants.RoleAdminPlatform, constants.ResourceLayoutPositions, constants.ActionDelete},
 
 		{constants.RoleAdminPlatform, constants.ResourcePoolPoints, constants.ActionRead},
-
-		// ─── platform_owner ──────────────────────────────────────────
-		{constants.RolePlatformOwner, constants.ResourcePlatformDashboard, constants.ActionRead},
-		{constants.RolePlatformOwner, constants.ResourcePlatformSettings, constants.ActionRead},
-		{constants.RolePlatformOwner, constants.ResourcePlatformSettings, constants.ActionUpdate},
-
-		{constants.RolePlatformOwner, constants.ResourceProfile, constants.ActionRead},
-
-		{constants.RolePlatformOwner, constants.ResourceServiceTypes, constants.ActionRead},
-		{constants.RolePlatformOwner, constants.ResourceServiceTypes, constants.ActionCreate},
-		{constants.RolePlatformOwner, constants.ResourceServiceTypes, constants.ActionUpdate},
-		{constants.RolePlatformOwner, constants.ResourceServiceTypes, constants.ActionDelete},
-
-		{constants.RolePlatformOwner, constants.ResourceVendors, constants.ActionRead},
-		{constants.RolePlatformOwner, constants.ResourceVendors, constants.ActionUpdate},
-		{constants.RolePlatformOwner, constants.ResourceVendors, constants.ActionDelete},
-
-		{constants.RolePlatformOwner, constants.ResourceSchedules, constants.ActionRead},
-
-		{constants.RolePlatformOwner, constants.ResourceBookings, constants.ActionRead},
-
-		{constants.RolePlatformOwner, constants.ResourceUserRoles, constants.ActionRead},
-		{constants.RolePlatformOwner, constants.ResourceUserRoles, constants.ActionCreate},
-		{constants.RolePlatformOwner, constants.ResourceUserRoles, constants.ActionUpdate},
-		{constants.RolePlatformOwner, constants.ResourceUserRoles, constants.ActionDelete},
-
-		{constants.RolePlatformOwner, constants.ResourceLayouts, constants.ActionRead},
-		{constants.RolePlatformOwner, constants.ResourceLayouts, constants.ActionCreate},
-		{constants.RolePlatformOwner, constants.ResourceLayouts, constants.ActionUpdate},
-		{constants.RolePlatformOwner, constants.ResourceLayouts, constants.ActionDelete},
-
-		{constants.RolePlatformOwner, constants.ResourceLayoutPositions, constants.ActionRead},
-		{constants.RolePlatformOwner, constants.ResourceLayoutPositions, constants.ActionCreate},
-		{constants.RolePlatformOwner, constants.ResourceLayoutPositions, constants.ActionUpdate},
-		{constants.RolePlatformOwner, constants.ResourceLayoutPositions, constants.ActionDelete},
-
-		{constants.RolePlatformOwner, constants.ResourcePoolPoints, constants.ActionRead},
-
-		{constants.RolePlatformOwner, constants.ResourceUsers, constants.ActionCreate},
-		{constants.RolePlatformOwner, constants.ResourceUsers, constants.ActionUpdate},
-		{constants.RolePlatformOwner, constants.ResourceUsers, constants.ActionDelete},
 	}
 
 	_, err := enforcer.AddPolicies(policies)

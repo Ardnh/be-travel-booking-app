@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/ardnh/be-travel-booking-app/internal/domain/entities"
-	"github.com/ardnh/be-travel-booking-app/pkg/constants"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -34,14 +33,14 @@ func Seed(db *gorm.DB) error {
 			return fmt.Errorf("failed to seed admin user: %w", err)
 		}
 
-		userRole := entities.UserRoles{
-			UserID: admin.UserID,
-			Role:   constants.RolePlatformOwner,
-		}
+		// userRole := entities.UserRoles{
+		// 	UserID: admin.UserID,
+		// 	Role:   constants.RolePlatformOwner,
+		// }
 
-		if err := db.Create(&userRole).Error; err != nil {
-			return fmt.Errorf("failed to seed user role: %w", err)
-		}
+		// if err := db.Create(&userRole).Error; err != nil {
+		// 	return fmt.Errorf("failed to seed user role: %w", err)
+		// }
 
 		log.Println("Admin user seeded successfully")
 		return nil

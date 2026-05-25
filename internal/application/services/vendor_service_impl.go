@@ -7,6 +7,7 @@ import (
 	"github.com/ardnh/be-travel-booking-app/internal/application/dto"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/entities"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/repositories"
+	"github.com/ardnh/be-travel-booking-app/pkg/constants"
 	errorConst "github.com/ardnh/be-travel-booking-app/pkg/errors"
 	"github.com/casbin/casbin/v3"
 	"github.com/google/uuid"
@@ -92,6 +93,16 @@ func (s *VendorServiceImpl) CreateVendor(ctx context.Context, req dto.CreateVend
 	errCreate := s.vendorRepository.CreateVendor(ctx, vendor)
 	if errCreate != nil {
 		return errCreate
+	}
+
+	_, err = s.casbinEnforcer.AddGroupingPolicy(ownerUserId.String(), constants.RoleBusinessOwner)
+	if err != nil {
+		s.log.WithFields(logrus.Fields{
+			"email":  req.Email,
+			"userID": ownerUserId,
+			"error":  err,
+		}).Error("failed to add casbin grouping policy")
+		return errorConst.ErrInternalServer
 	}
 
 	s.casbinEnforcer.LoadPolicy()

@@ -30,9 +30,19 @@ func InitCasbin(modelPath string, db *gorm.DB) (*casbin.Enforcer, error) {
 
 func GetUserPermissions(enforcer *casbin.Enforcer, userID string) []string {
 	permissions, _ := enforcer.GetImplicitPermissionsForUser(userID)
+	seen := make(map[string]bool)
 	result := []string{}
 	for _, p := range permissions {
-		result = append(result, p[1]+":"+p[2])
+		perm := p[1] + ":" + p[2]
+		if !seen[perm] {
+			seen[perm] = true
+			result = append(result, perm)
+		}
 	}
 	return result
+}
+
+func GetUserRoles(enforcer *casbin.Enforcer, userID string) []string {
+	roles, _ := enforcer.GetRolesForUser(userID)
+	return roles
 }

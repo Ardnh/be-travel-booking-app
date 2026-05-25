@@ -3,18 +3,16 @@ package constants
 
 // Resources
 const (
-	ResourceProfile           = "profile"
-	ResourceServiceTypes      = "service-types"
-	ResourcePoolPoints        = "pool-points"
-	ResourceVendors           = "vendors"
-	ResourceLayouts           = "layouts"
-	ResourceLayoutPositions   = "layout-positions"
-	ResourceSchedules         = "schedules"
-	ResourceUserRoles         = "user-roles"
-	ResourceUsers             = "users"
-	ResourceBookings          = "bookings"
-	ResourcePlatformDashboard = "platform.dashboard"
-	ResourcePlatformSettings  = "platform.settings"
+	ResourceProfile         = "profile"
+	ResourceServiceTypes    = "service-types"
+	ResourcePoolPoints      = "pool-points"
+	ResourceVendors         = "vendors"
+	ResourceLayouts         = "layouts"
+	ResourceLayoutPositions = "layout-positions"
+	ResourceSchedules       = "schedules"
+	ResourceUserRoles       = "user-roles"
+	ResourceUsers           = "users"
+	ResourceBookings        = "bookings"
 )
 
 // Actions

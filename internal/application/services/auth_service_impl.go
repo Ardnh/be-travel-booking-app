@@ -19,26 +19,23 @@ import (
 )
 
 type AuthServiceImpl struct {
-	userRepository      repositories.UserRepository
-	userRolesRepository repositories.UserRolesRepository
-	log                 *logrus.Logger
-	appConfig           *config.Config
-	casbinEnforcer      *casbin.Enforcer
+	userRepository repositories.UserRepository
+	log            *logrus.Logger
+	appConfig      *config.Config
+	casbinEnforcer *casbin.Enforcer
 }
 
 func NewAuthService(
 	userRepository repositories.UserRepository,
-	userRolesRepository repositories.UserRolesRepository,
 	log *logrus.Logger,
 	appConfig *config.Config,
 	casbinEnforcer *casbin.Enforcer,
 ) services.AuthService {
 	return &AuthServiceImpl{
-		userRepository:      userRepository,
-		userRolesRepository: userRolesRepository,
-		log:                 log,
-		appConfig:           appConfig,
-		casbinEnforcer:      casbinEnforcer,
+		userRepository: userRepository,
+		log:            log,
+		appConfig:      appConfig,
+		casbinEnforcer: casbinEnforcer,
 	}
 }
 
@@ -112,20 +109,6 @@ func (s *AuthServiceImpl) Register(ctx context.Context, req dto.RegisterRequestD
 			"email": req.Email,
 			"error": err,
 		}).Error("failed to create user")
-		return nil, errorConst.ErrInternalServer
-	}
-
-	// Create user roles
-	userRoles := entities.UserRoles{
-		UserID: user.UserID,
-		Role:   constants.RoleDailyUser,
-	}
-	err = s.userRolesRepository.CreateUserRole(ctx, userRoles)
-	if err != nil {
-		s.log.WithFields(logrus.Fields{
-			"email": req.Email,
-			"error": err,
-		}).Error("failed to create user roles")
 		return nil, errorConst.ErrInternalServer
 	}
 

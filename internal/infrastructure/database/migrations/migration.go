@@ -22,7 +22,7 @@ func Migrate(db *gorm.DB) error {
 
 		// 2. Tabel yang bergantung pada level 1
 		&entities.Pools{},
-		&entities.UserRoles{},
+		// &entities.UserRoles{},
 
 		// 3. Tabel yang bergantung pada level 2
 		&entities.Schedules{},

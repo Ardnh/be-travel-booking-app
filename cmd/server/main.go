@@ -67,7 +67,6 @@ func main() {
 	layoutPositionRepo := repositories.NewLayoutPositionRepository(db, redisDb)
 	scheduleRepo := repositories.NewScheduleRepository(db, redisDb)
 	userRepo := repositories.NewUsersRepository(db, redisDb)
-	userRolesRepo := repositories.NewUserRolesRepository(db, redisDb)
 	bookingRepo := repositories.NewBookingRepository(db, redisDb)
 
 	// Service
@@ -77,9 +76,8 @@ func main() {
 	layoutService := services.NewLayoutServiceImpl(layoutRepo, logger)
 	layoutPositionService := services.NewLayoutPositionServiceImpl(layoutPositionRepo, logger)
 	scheduleService := services.NewScheduleServiceImpl(scheduleRepo, logger)
-	authService := services.NewAuthService(userRepo, userRolesRepo, logger, cfg, enforcer)
-	userRolesService := services.NewUserRolesServiceImpl(userRolesRepo, logger)
-	usersService := services.NewUsersServiceImpl(userRepo, userRolesRepo, enforcer, logger)
+	authService := services.NewAuthService(userRepo, logger, cfg, enforcer)
+	usersService := services.NewUsersServiceImpl(userRepo, enforcer, logger)
 	bookingService := services.NewBookingServiceImpl(bookingRepo, logger)
 
 	// Handler
@@ -90,7 +88,6 @@ func main() {
 	layoutPositionHandler := handlers.NewLayoutPositionHandler(layoutPositionService, validator, logger)
 	scheduleHandler := handlers.NewScheduleHandler(scheduleService, validator, logger)
 	authHandler := handlers.NewAuthHandler(authService, validator, logger)
-	userRolesHandler := handlers.NewUserRolesHandler(userRolesService, validator, logger)
 	usersHandler := handlers.NewUsersHandler(usersService, validator, logger)
 	bookingHandler := handlers.NewBookingHandler(bookingService, validator, logger)
 
@@ -118,7 +115,6 @@ func main() {
 		layoutPositionHandler,
 		scheduleHandler,
 		authHandler,
-		userRolesHandler,
 		usersHandler,
 		bookingHandler,
 		validator,

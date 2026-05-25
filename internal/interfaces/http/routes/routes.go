@@ -11,7 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func SetupAPIRoutes(app *fiber.App, log *logrus.Logger, enforcer *casbin.Enforcer, serviceTypeHandler *handlers.ServiceTypeHandler, poolPointHandler *handlers.PoolPointHandler, vendorHandler *handlers.VendorHandler, layoutHandler *handlers.LayoutHandler, layoutPositionHandler *handlers.LayoutPositionHandler, scheduleHandler *handlers.ScheduleHandler, authHandler *handlers.AuthHandler, userRolesHandler *handlers.UserRolesHandler, usersHandler *handlers.UsersHandler, bookingHandler *handlers.BookingHandler, validator *validator.Validate) {
+func SetupAPIRoutes(app *fiber.App, log *logrus.Logger, enforcer *casbin.Enforcer, serviceTypeHandler *handlers.ServiceTypeHandler, poolPointHandler *handlers.PoolPointHandler, vendorHandler *handlers.VendorHandler, layoutHandler *handlers.LayoutHandler, layoutPositionHandler *handlers.LayoutPositionHandler, scheduleHandler *handlers.ScheduleHandler, authHandler *handlers.AuthHandler, usersHandler *handlers.UsersHandler, bookingHandler *handlers.BookingHandler, validator *validator.Validate) {
 
 	// Middleware
 	casbinMw := middleware.NewCasbinMiddleware(enforcer, log)
@@ -81,15 +81,15 @@ func SetupAPIRoutes(app *fiber.App, log *logrus.Logger, enforcer *casbin.Enforce
 
 	vendors.Get("/:vendorId/schedules", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourceSchedules, constants.ActionRead), scheduleHandler.GetSchedulesByVendorID)
 
-	// User Roles routes
-	userRoles := api.Group("/user-roles", authMiddleware.Authenticate())
-	userRoles.Get("/:id", casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionRead), userRolesHandler.GetUserRoleByID)
-	userRoles.Post("/", casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionCreate), userRolesHandler.CreateUserRole)
-	userRoles.Put("/:id", casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionUpdate), userRolesHandler.UpdateUserRole)
-	userRoles.Delete("/:id", casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionDelete), userRolesHandler.DeleteUserRole)
+	// // User Roles routes
+	// userRoles := api.Group("/user-roles", authMiddleware.Authenticate())
+	// userRoles.Get("/:id", casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionRead), userRolesHandler.GetUserRoleByID)
+	// userRoles.Post("/", casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionCreate), userRolesHandler.CreateUserRole)
+	// userRoles.Put("/:id", casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionUpdate), userRolesHandler.UpdateUserRole)
+	// userRoles.Delete("/:id", casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionDelete), userRolesHandler.DeleteUserRole)
 
-	api.Get("/users/:userId/user-roles", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionRead), userRolesHandler.GetUserRolesByUserID)
-	vendors.Get("/:vendorId/user-roles", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionRead), userRolesHandler.GetUserRolesByVendorID)
+	// api.Get("/users/:userId/user-roles", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionRead), userRolesHandler.GetUserRolesByUserID)
+	// vendors.Get("/:vendorId/user-roles", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourceUserRoles, constants.ActionRead), userRolesHandler.GetUserRolesByVendorID)
 
 	// Users routes
 	users := api.Group("/users", authMiddleware.Authenticate())

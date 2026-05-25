@@ -15,18 +15,16 @@ import (
 )
 
 type UsersServiceImpl struct {
-	userRepository      repositories.UserRepository
-	userRolesRepository repositories.UserRolesRepository
-	enforcer            *casbin.Enforcer
-	log                 *logrus.Logger
+	userRepository repositories.UserRepository
+	enforcer       *casbin.Enforcer
+	log            *logrus.Logger
 }
 
-func NewUsersServiceImpl(userRepository repositories.UserRepository, userRolesRepository repositories.UserRolesRepository, enforcer *casbin.Enforcer, log *logrus.Logger) *UsersServiceImpl {
+func NewUsersServiceImpl(userRepository repositories.UserRepository, enforcer *casbin.Enforcer, log *logrus.Logger) *UsersServiceImpl {
 	return &UsersServiceImpl{
-		userRepository:      userRepository,
-		userRolesRepository: userRolesRepository,
-		enforcer:            enforcer,
-		log:                 log,
+		userRepository: userRepository,
+		enforcer:       enforcer,
+		log:            log,
 	}
 }
 
@@ -127,20 +125,8 @@ func (s *UsersServiceImpl) GetUserProfile(ctx context.Context, userID string) (*
 		return nil, err
 	}
 
-	userRoles, err := s.userRolesRepository.GetUserRolesByUserID(ctx, userUUID)
-	if err != nil {
-		return nil, err
-	}
-
-	var roles []dto.UserRoleDTO
-	for _, ur := range userRoles {
-		roles = append(roles, dto.UserRoleDTO{
-			UserRoleID: ur.UserRoleID.String(),
-			Role:       ur.Role,
-		})
-	}
-
 	permissions := casbin_utils.GetUserPermissions(s.enforcer, user.UserID.String())
+	roles := casbin_utils.GetUserRoles(s.enforcer, user.UserID.String())
 
 	return &dto.UserProfileDTO{
 		UserID:      user.UserID.String(),

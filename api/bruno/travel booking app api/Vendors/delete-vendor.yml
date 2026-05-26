@@ -5,7 +5,11 @@ info:
 
 http:
   method: DELETE
-  url: "{{base_url}}/api/v1/vendors/:id"
+  url: "{{base_url}}/vendors/:id"
+  params:
+    - name: id
+      value: ""
+      type: path
   auth: inherit
 
 settings:

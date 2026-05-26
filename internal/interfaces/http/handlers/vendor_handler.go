@@ -1,6 +1,9 @@
 package handlers
 
 import (
+	"math"
+	"strconv"
+
 	"github.com/ardnh/be-travel-booking-app/internal/application/dto"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/services"
 	httpResponses "github.com/ardnh/be-travel-booking-app/internal/interfaces/http/responses"
@@ -56,12 +59,37 @@ func (h *VendorHandler) GetVendorByOwnerUserID(c fiber.Ctx) error {
 }
 
 func (h *VendorHandler) GetAllVendors(c fiber.Ctx) error {
-	vendors, err := h.vendorService.GetAllVendors(c.Context())
+	// Parse pagination params
+	page, err := strconv.Atoi(c.Query("page", "1"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+
+	limit, err := strconv.Atoi(c.Query("limit", "10"))
+	if err != nil || limit < 1 {
+		limit = 10
+	}
+
+	offset := (page - 1) * limit
+
+	vendors, total, err := h.vendorService.GetAllVendors(c.Context(), limit, offset)
 	if err != nil {
 		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
 	}
 
-	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Vendors retrieved successfully", vendors)
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
+
+	meta := fiber.Map{
+		"page":        page,
+		"limit":       limit,
+		"total":       total,
+		"total_pages": totalPages,
+	}
+
+	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Vendors retrieved successfully", fiber.Map{
+		"data": vendors,
+		"meta": meta,
+	})
 }
 
 func (h *VendorHandler) CreateVendor(c fiber.Ctx) error {

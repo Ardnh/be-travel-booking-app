@@ -58,12 +58,8 @@ func (s *VendorServiceImpl) GetVendorByOwnerUserID(ctx context.Context, ownerUse
 	return vendor, nil
 }
 
-func (s *VendorServiceImpl) GetAllVendors(ctx context.Context) ([]entities.Vendors, error) {
-	vendors, err := s.vendorRepository.GetAllVendors(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return vendors, nil
+func (s *VendorServiceImpl) GetAllVendors(ctx context.Context, limit, offset int) ([]entities.Vendors, int64, error) {
+	return s.vendorRepository.GetAllVendors(ctx, limit, offset)
 }
 
 func (s *VendorServiceImpl) CreateVendor(ctx context.Context, req dto.CreateVendorDTO) error {

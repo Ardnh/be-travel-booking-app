@@ -48,13 +48,21 @@ func (r *vendorRepositoryImpl) GetVendorByOwnerUserID(ctx context.Context, owner
 	return &vendor, nil
 }
 
-func (r *vendorRepositoryImpl) GetAllVendors(ctx context.Context) ([]entities.Vendors, error) {
+func (r *vendorRepositoryImpl) GetAllVendors(ctx context.Context, limit, offset int) ([]entities.Vendors, int64, error) {
 	var vendors []entities.Vendors
-	err := r.db.WithContext(ctx).Find(&vendors).Error
-	if err != nil {
-		return nil, err
+	var total int64
+	
+	// Get total count
+	if err := r.db.WithContext(ctx).Model(&entities.Vendors{}).Count(&total).Error; err != nil {
+		return nil, 0, err
 	}
-	return vendors, nil
+	
+	// Get paginated results
+	if err := r.db.WithContext(ctx).Limit(limit).Offset(offset).Find(&vendors).Error; err != nil {
+		return nil, 0, err
+	}
+	
+	return vendors, total, nil
 }
 
 // Repository

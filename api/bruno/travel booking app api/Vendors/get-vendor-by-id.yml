@@ -5,7 +5,11 @@ info:
 
 http:
   method: GET
+<<<<<<< Updated upstream
   url: "{{base_url}}/vendors/1f1eee8d-61a4-4d33-9c33-2da2138cd977"
+=======
+  url: "{{base_url}}/vendors/51932b8b-f6f0-4856-bfa2-3416740f5c07"
+>>>>>>> Stashed changes
   auth: inherit
 
 settings:

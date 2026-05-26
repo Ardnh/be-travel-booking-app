@@ -39,8 +39,6 @@ func (h *AuthHandler) Login(c fiber.Ctx) error {
 		return httpResponses.HandleError(c, err)
 	}
 
-	// set cookie setelah login berhasil
-
 	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Login successful", result)
 }
 

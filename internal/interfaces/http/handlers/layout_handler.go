@@ -86,12 +86,21 @@ func (h *LayoutHandler) CreateLayout(c fiber.Ctx) error {
 		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, validator_utils.FormatValidationErrors(err))
 	}
 
-	err := h.layoutService.CreateLayout(c.Context(), req)
+	ownerUserID, ok := c.Locals("user_id").(string)
+	h.log.Errorf("Parse user ID from c.local: %v", ownerUserID)
+	if !ok || ownerUserID == "" {
+		h.log.Errorf("User ID not found in context")
+		return httpResponses.NewErrorResponse(c, fiber.ErrUnauthorized.Code, fiber.ErrUnauthorized.Message, "User ID not found")
+	}
+
+	req.CreatedBy = ownerUserID
+
+	layout, err := h.layoutService.CreateLayout(c.Context(), req)
 	if err != nil {
 		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
 	}
 
-	return httpResponses.NewSuccessResponse(c, fiber.StatusCreated, "Layout created successfully", nil)
+	return httpResponses.NewSuccessResponse(c, fiber.StatusCreated, "Layout created successfully", layout)
 }
 
 func (h *LayoutHandler) UpdateLayout(c fiber.Ctx) error {
@@ -106,12 +115,12 @@ func (h *LayoutHandler) UpdateLayout(c fiber.Ctx) error {
 		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
 	}
 
-	err = h.layoutService.UpdateLayout(c.Context(), layoutID.String(), req)
+	layout, err := h.layoutService.UpdateLayout(c.Context(), layoutID.String(), req)
 	if err != nil {
 		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
 	}
 
-	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Layout updated successfully", nil)
+	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Layout updated successfully", layout)
 }
 
 func (h *LayoutHandler) DeleteLayout(c fiber.Ctx) error {

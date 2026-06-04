@@ -10,7 +10,7 @@ import (
 type LayoutRepository interface {
 	GetLayoutById(ctx context.Context, layoutID uuid.UUID) (*entities.Layouts, error)
 	GetLayout(ctx context.Context, page int, pageSize int, search string, sortBy string, sortOrder string) ([]*entities.Layouts, int64, error)
-	CreateLayout(ctx context.Context, layout entities.Layouts, layoutPosition []entities.LayoutPositions) error
-	UpdateLayout(ctx context.Context, layout entities.Layouts, layoutPosition []entities.LayoutPositions) error
+	CreateLayout(ctx context.Context, layout entities.Layouts, layoutPosition []entities.LayoutPositions) (*entities.Layouts, error)
+	UpdateLayout(ctx context.Context, layout entities.Layouts, layoutPosition []entities.LayoutPositions) (*entities.Layouts, error)
 	DeleteLayout(ctx context.Context, layoutID uuid.UUID) error
 }

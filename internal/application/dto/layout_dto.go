@@ -31,11 +31,11 @@ type Pagination struct {
 
 type CreateLayoutDTO struct {
 	Name            string                    `json:"name" validate:"required"`
-	GridSizeX       int                       `json:"gridSizeX" validate:"required,min=1"`
-	GridSizeY       int                       `json:"gridSizeY" validate:"required,min=1"`
-	SeatCount       int                       `json:"seatCount" validate:"required,min=1"`
-	CreatedBy       string                    `json:"createdBy" validate:"required"`
-	LayoutPositions []CreateLayoutPositionDTO `json:"layoutPositions"`
+	GridSizeX       int                       `json:"grid_size_x" validate:"required,min=1"`
+	GridSizeY       int                       `json:"grid_size_y" validate:"required,min=1"`
+	SeatCount       int                       `json:"seat_count" validate:"required,min=1"`
+	CreatedBy       string                    `json:"created_by"`
+	LayoutPositions []CreateLayoutPositionDTO `json:"layout_positions"`
 }
 
 // type CreateLayoutPositionDTO struct {

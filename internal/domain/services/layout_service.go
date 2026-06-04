@@ -9,7 +9,7 @@ import (
 type LayoutService interface {
 	GetLayoutById(ctx context.Context, layoutID string) (*dto.LayoutDTO, error)
 	GetLayout(ctx context.Context, page int, pageSize int, search string, sortBy string, sortOrder string) ([]*dto.LayoutDTO, int64, error)
-	CreateLayout(ctx context.Context, layout dto.CreateLayoutDTO) error
-	UpdateLayout(ctx context.Context, layoutID string, layout dto.CreateLayoutDTO) error
+	CreateLayout(ctx context.Context, layout dto.CreateLayoutDTO) (*dto.LayoutDTO, error)
+	UpdateLayout(ctx context.Context, layoutID string, layout dto.CreateLayoutDTO) (*dto.LayoutDTO, error)
 	DeleteLayout(ctx context.Context, layoutID string) error
 }

@@ -67,38 +67,36 @@ func (s *LayoutServiceImpl) GetLayout(ctx context.Context, page int, pageSize in
 	return resultDto, total, nil
 }
 
-func (s *LayoutServiceImpl) CreateLayout(ctx context.Context, layout dto.CreateLayoutDTO) error {
-
+func (s *LayoutServiceImpl) CreateLayout(ctx context.Context, layout dto.CreateLayoutDTO) (*dto.LayoutDTO, error) {
 	layoutEntity, err := mapper.CreateLayoutDTOToEntity(layout)
 	if err != nil {
 		s.log.WithFields(logrus.Fields{
 			"error": err,
 		}).Error("failed to map layout dto to entity")
-		return errorConst.ErrInternalServer
+		return nil, errorConst.ErrInternalServer
 	}
 
 	layoutPositionEntities := mapper.CreateLayoutPositionDTOsToEntities(layout.LayoutPositions)
 
-	err = s.LayoutRepository.CreateLayout(ctx, layoutEntity, layoutPositionEntities)
+	createdLayout, err := s.LayoutRepository.CreateLayout(ctx, layoutEntity, layoutPositionEntities)
 	if err != nil {
 		s.log.WithFields(logrus.Fields{
 			"error": err,
 		}).Error("failed to create layout")
-		return errorConst.ErrInternalServer
+		return nil, errorConst.ErrInternalServer
 	}
 
-	return nil
+	layoutDto := mapper.LayoutToDTO(createdLayout)
+	return layoutDto, nil
 }
 
-func (s *LayoutServiceImpl) UpdateLayout(ctx context.Context, layoutID string, layout dto.CreateLayoutDTO) error {
-
-	// Get current layout
+func (s *LayoutServiceImpl) UpdateLayout(ctx context.Context, layoutID string, layout dto.CreateLayoutDTO) (*dto.LayoutDTO, error) {
 	layoutIdUuid, err := uuid.Parse(layoutID)
 	if err != nil {
 		s.log.WithFields(logrus.Fields{
 			"error": err,
 		}).Error("failed to parse layout id")
-		return errorConst.ErrInternalServer
+		return nil, errorConst.ErrInternalServer
 	}
 
 	currentLayout, err := s.LayoutRepository.GetLayoutById(ctx, layoutIdUuid)
@@ -106,7 +104,7 @@ func (s *LayoutServiceImpl) UpdateLayout(ctx context.Context, layoutID string, l
 		s.log.WithFields(logrus.Fields{
 			"error": err,
 		}).Error("failed to get current layout")
-		return errorConst.ErrInternalServer
+		return nil, errorConst.ErrInternalServer
 	}
 
 	if currentLayout.GridSizeX != layout.GridSizeX {
@@ -126,15 +124,16 @@ func (s *LayoutServiceImpl) UpdateLayout(ctx context.Context, layoutID string, l
 	}
 
 	layoutPositionEntities := mapper.CreateLayoutPositionDTOsToEntities(layout.LayoutPositions)
-	err = s.LayoutRepository.UpdateLayout(ctx, *currentLayout, layoutPositionEntities)
+	updatedLayout, err := s.LayoutRepository.UpdateLayout(ctx, *currentLayout, layoutPositionEntities)
 	if err != nil {
 		s.log.WithFields(logrus.Fields{
 			"error": err,
 		}).Error("failed to update layout")
-		return errorConst.ErrInternalServer
+		return nil, errorConst.ErrInternalServer
 	}
 
-	return nil
+	layoutDto := mapper.LayoutToDTO(updatedLayout)
+	return layoutDto, nil
 }
 
 func (s *LayoutServiceImpl) DeleteLayout(ctx context.Context, layoutID string) error {

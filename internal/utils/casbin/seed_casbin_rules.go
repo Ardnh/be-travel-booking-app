@@ -18,7 +18,12 @@ func SeedCasbinRules(enforcer *casbin.Enforcer) error {
 	policies := [][]string{
 
 		// ─── platform_owner ──────────────────────────────────────────
-		// Service Type, Layout, Layout Position, User Roles
+		// Service Type, Layout, Layout Position
+
+		// Users
+		{constants.RolePlatformOwner, constants.ResourceProfile, constants.ActionRead},
+		{constants.RolePlatformOwner, constants.ResourceProfile, constants.ActionUpdate},
+
 		{constants.RolePlatformOwner, constants.ResourceProfile, constants.ActionRead},
 
 		{constants.RolePlatformOwner, constants.ResourceServiceTypes, constants.ActionRead},
@@ -58,6 +63,7 @@ func SeedCasbinRules(enforcer *casbin.Enforcer) error {
 		// ─── business_owner ──────────────────────────────────────────
 		// Vendor, Pool Points, Vendor, Schedule, Booking
 		{constants.RoleBusinessOwner, constants.ResourceProfile, constants.ActionRead},
+		{constants.RoleBusinessOwner, constants.ResourceProfile, constants.ActionUpdate},
 
 		// Vendors
 		{constants.RoleBusinessOwner, constants.ResourceVendors, constants.ActionRead},
@@ -115,6 +121,7 @@ func SeedCasbinRules(enforcer *casbin.Enforcer) error {
 
 		// ─── admin_owner ─────────────────────────────────────────────
 		{constants.RoleAdminBusiness, constants.ResourceProfile, constants.ActionRead},
+		{constants.RoleAdminBusiness, constants.ResourceProfile, constants.ActionUpdate},
 
 		{constants.RoleAdminBusiness, constants.ResourcePoolPoints, constants.ActionRead},
 		{constants.RoleAdminBusiness, constants.ResourcePoolPoints, constants.ActionCreate},
@@ -133,6 +140,8 @@ func SeedCasbinRules(enforcer *casbin.Enforcer) error {
 
 		// ─── admin_pool ──────────────────────────────────────────────
 		{constants.RoleAdminPool, constants.ResourceProfile, constants.ActionRead},
+		{constants.RoleAdminPool, constants.ResourceProfile, constants.ActionRead},
+		{constants.RoleAdminPool, constants.ResourceProfile, constants.ActionUpdate},
 
 		{constants.RoleAdminPool, constants.ResourcePoolPoints, constants.ActionRead},
 
@@ -146,6 +155,7 @@ func SeedCasbinRules(enforcer *casbin.Enforcer) error {
 
 		// ─── admin_platform ──────────────────────────────────────────
 		{constants.RoleAdminPlatform, constants.ResourceProfile, constants.ActionRead},
+		{constants.RoleAdminPlatform, constants.ResourceProfile, constants.ActionUpdate},
 
 		{constants.RoleAdminPlatform, constants.ResourceUsers, constants.ActionCreate},
 		{constants.RoleAdminPlatform, constants.ResourceUsers, constants.ActionUpdate},

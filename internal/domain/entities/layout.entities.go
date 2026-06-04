@@ -13,12 +13,10 @@ type Layouts struct {
 	GridSizeX int        `gorm:"type:int;not null" json:"grid_size_x"`
 	GridSizeY int        `gorm:"type:int;not null" json:"grid_size_y"`
 	SeatCount int        `gorm:"type:int;not null" json:"seat_count"`
-	CreatedBy *uuid.UUID `gorm:"type:uuid" json:"created_by,omitempty"`
+	CreatedBy *uuid.UUID `gorm:"type:uuid;column:created_by" json:"created_by,omitempty"`
 
 	// Relations
 	Positions []LayoutPositions `gorm:"foreignKey:LayoutID;references:LayoutID"`
-	// Schedules []Schedules       `gorm:"-" json:"schedules,omitempty"`
-
 	BaseModel
 }
 

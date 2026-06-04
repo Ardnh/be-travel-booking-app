@@ -3,14 +3,16 @@ package seeder
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/ardnh/be-travel-booking-app/internal/domain/entities"
+	"github.com/ardnh/be-travel-booking-app/pkg/constants"
+	"github.com/casbin/casbin/v3"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-func Seed(db *gorm.DB) error {
+func Seed(db *gorm.DB, casbinEnforcer *casbin.Enforcer, log *logrus.Logger) error {
 	log.Println("Running seeders...")
 
 	// Check if admin user already exists
@@ -33,14 +35,17 @@ func Seed(db *gorm.DB) error {
 			return fmt.Errorf("failed to seed admin user: %w", err)
 		}
 
-		// userRole := entities.UserRoles{
-		// 	UserID: admin.UserID,
-		// 	Role:   constants.RolePlatformOwner,
-		// }
+		_, err = casbinEnforcer.AddGroupingPolicy(admin.UserID.String(), constants.RolePlatformOwner)
+		if err != nil {
+			log.WithFields(logrus.Fields{
+				"email":  admin.Email,
+				"userID": admin.UserID.String(),
+				"error":  err,
+			}).Error("failed to add casbin grouping policy")
+			return fmt.Errorf("failed to seed admin user: %w", err)
+		}
 
-		// if err := db.Create(&userRole).Error; err != nil {
-		// 	return fmt.Errorf("failed to seed user role: %w", err)
-		// }
+		casbinEnforcer.LoadPolicy()
 
 		log.Println("Admin user seeded successfully")
 		return nil

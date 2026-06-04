@@ -47,8 +47,8 @@ func SetupAPIRoutes(app *fiber.App, log *logrus.Logger, enforcer *casbin.Enforce
 	// Vendor routes
 	vendors := api.Group("/vendors", authMiddleware.Authenticate())
 	vendors.Get("/", casbinMw.Authorize(constants.ResourceVendors, constants.ActionRead), vendorHandler.GetAllVendors)
+	vendors.Get("/owner", casbinMw.Authorize(constants.ResourceVendors, constants.ActionRead), vendorHandler.GetVendorByOwnerUserID)
 	vendors.Get("/:id", casbinMw.Authorize(constants.ResourceVendors, constants.ActionRead), vendorHandler.GetVendorByID)
-	vendors.Get("/owner/:userId", casbinMw.Authorize(constants.ResourceVendors, constants.ActionRead), vendorHandler.GetVendorByOwnerUserID)
 	vendors.Post("/", casbinMw.Authorize(constants.ResourceVendors, constants.ActionCreate), vendorHandler.CreateVendor)
 	vendors.Put("/:id", casbinMw.Authorize(constants.ResourceVendors, constants.ActionUpdate), vendorHandler.UpdateVendor)
 	vendors.Delete("/:id", casbinMw.Authorize(constants.ResourceVendors, constants.ActionDelete), vendorHandler.DeleteVendor)

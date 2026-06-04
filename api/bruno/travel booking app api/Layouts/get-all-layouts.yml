@@ -5,7 +5,23 @@ info:
 
 http:
   method: GET
-  url: "{{base_url}}/api/v1/layouts"
+  url: "{{base_url}}/layouts?page=1&page_size=30&search=&sort_by=&sort_order="
+  params:
+    - name: page
+      value: "1"
+      type: query
+    - name: page_size
+      value: "30"
+      type: query
+    - name: search
+      value: ""
+      type: query
+    - name: sort_by
+      value: ""
+      type: query
+    - name: sort_order
+      value: ""
+      type: query
   auth: inherit
 
 settings:

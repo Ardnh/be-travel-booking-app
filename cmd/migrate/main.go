@@ -8,11 +8,10 @@ import (
 	"github.com/ardnh/be-travel-booking-app/internal/config"
 	"github.com/ardnh/be-travel-booking-app/internal/infrastructure/database/migrations"
 	"github.com/ardnh/be-travel-booking-app/internal/infrastructure/database/postgresql"
-	"github.com/ardnh/be-travel-booking-app/internal/infrastructure/database/seeder"
 )
 
 func main() {
-	seed := flag.Bool("seed", false, "run seeder after migration")
+	// seed := flag.Bool("seed", false, "run seeder after migration")
 	flag.Parse()
 
 	cfg := config.LoadConfig()
@@ -28,10 +27,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if *seed {
-		log.Println("Running seeder...")
-		seeder.Seed(db)
-	}
+	// if *seed {
+	// 	log.Println("Running seeder...")
+	// 	seeder.Seed(db, )
+	// }
 
 	log.Println("Done!")
 }

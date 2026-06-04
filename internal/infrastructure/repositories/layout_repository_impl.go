@@ -90,8 +90,8 @@ func (r *LayoutRepositoryImpl) GetLayout(ctx context.Context, page int, pageSize
 
 	// --- Query data + preload + pagination
 	err := baseQuery.
-		Preload("Creator").
-		Preload("LayoutPositions").
+		// Preload("CreatedBy").
+		// Preload("LayoutPositions").
 		Order(sortBy + " " + sortOrder).
 		Limit(pageSize).
 		Offset(offset).
@@ -109,7 +109,7 @@ func (r *LayoutRepositoryImpl) CreateLayout(ctx context.Context, layout entities
 	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 
 		// 1. Create layout dulu → LayoutID keisi
-		if err := tx.Create(layout).Error; err != nil {
+		if err := tx.Create(&layout).Error; err != nil {
 			return err
 		}
 

@@ -5,16 +5,16 @@ info:
 
 http:
   method: POST
-  url: "{{base_url}}/api/v1/layouts"
+  url: "{{base_url}}/layouts"
   body:
     type: json
     data: |-
       {
-        "name": "Layout Name",
-        "gridSizeX": 10,
+        "name": "Hiace",
+        "gridSizeX": 4,
         "gridSizeY": 5,
-        "seatCount": 50,
-        "createdBy": ""
+        "seatCount": 14,
+        "createdBy": "d23637db-5b46-4d82-9a3f-c279e765b0fa"
       }
   auth: inherit
 

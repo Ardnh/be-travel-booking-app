@@ -10,8 +10,8 @@ http:
     type: json
     data: |-
       {
-        "name": "Updated Vendor",
-        "description": "Updated description"
+        "business_name": "Travelens",
+        "description": "Travel Mantap"
       }
   auth: inherit
 

@@ -43,11 +43,6 @@ func main() {
 		log.Fatalf("❌ Failed to connect to database: %v", err)
 	}
 
-	// Seed initial data
-	if err := seeder.Seed(db); err != nil {
-		log.Fatalf("❌ Failed to seed database: %v", err)
-	}
-
 	defer postgresql.CloseDB(db)
 
 	redisDb := redis.NewRedisDB(cfg)
@@ -58,6 +53,11 @@ func main() {
 	enforcer, err := casbin_utils.InitCasbin(modelPath, db)
 	// Seed rules (jalankan sekali, atau cek dulu apakah sudah ada)
 	casbin_utils.SeedCasbinRules(enforcer)
+
+	// Seed initial data
+	if err := seeder.Seed(db, enforcer, logger); err != nil {
+		log.Fatalf("❌ Failed to seed database: %v", err)
+	}
 
 	// Repository
 	serviceTypeRepo := repositories.NewServiceTypeRepository(db, redisDb)

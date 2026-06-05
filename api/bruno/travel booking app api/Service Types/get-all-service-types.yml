@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{base_url}}/api/v1/service-types"
+  url: "{{base_url}}/service-types"
   auth: inherit
 
 settings:

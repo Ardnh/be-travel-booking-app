@@ -10,11 +10,11 @@ http:
     type: json
     data: |-
       {
-        "name": "Hiace",
-        "gridSizeX": 4,
-        "gridSizeY": 5,
-        "seatCount": 14,
-        "createdBy": "d23637db-5b46-4d82-9a3f-c279e765b0fa"
+        "name": "Bus",
+        "gridSizeX": 6,
+        "gridSizeY": 18,
+        "seatCount": 60,
+        "createdBy": "a9ff86f9-2b60-4cb4-bc48-6729de27140a"
       }
   auth: inherit
 

@@ -27,10 +27,7 @@ func NewLayoutRepository(db *gorm.DB, redis *redis.Client) repositories.LayoutRe
 func (r *LayoutRepositoryImpl) GetLayoutById(ctx context.Context, layoutID uuid.UUID) (*entities.Layouts, error) {
 	var layout entities.Layouts
 
-	err := r.db.WithContext(ctx).
-		Preload("Creator").
-		Preload("LayoutPositions").
-		First(&layout, "layout_id = ?", layoutID).Error
+	err := r.db.WithContext(ctx).First(&layout, "layout_id = ?", layoutID).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

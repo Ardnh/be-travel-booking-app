@@ -1,6 +1,8 @@
 package mapper
 
 import (
+	"fmt"
+
 	"github.com/ardnh/be-travel-booking-app/internal/application/dto"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/entities"
 	"github.com/google/uuid"
@@ -19,14 +21,17 @@ func LayoutToDTO(layout *entities.Layouts) *dto.LayoutDTO {
 	if layout.CreatedBy != nil {
 		createdBy = layout.CreatedBy.String()
 	}
+
+	fmt.Println(layout.LayoutConfig)
+
 	return &dto.LayoutDTO{
-		LayoutID:        layout.LayoutID.String(),
-		Name:            layout.Name,
-		GridSizeX:       layout.GridSizeX,
-		GridSizeY:       layout.GridSizeY,
-		SeatCount:       layout.SeatCount,
-		CreatedBy:       createdBy,
-		LayoutPositions: LayoutPositionsToDTO(layout.Positions),
+		LayoutID:     layout.LayoutID.String(),
+		Name:         layout.Name,
+		GridSizeX:    layout.GridSizeX,
+		GridSizeY:    layout.GridSizeY,
+		SeatCount:    layout.SeatCount,
+		LayoutConfig: layout.LayoutConfig,
+		CreatedBy:    createdBy,
 	}
 }
 
@@ -36,24 +41,16 @@ func CreateLayoutDTOToEntity(layout dto.CreateLayoutDTO) (entities.Layouts, erro
 		return entities.Layouts{}, err
 	}
 
-	return entities.Layouts{
-		Name:      layout.Name,
-		GridSizeX: layout.GridSizeX,
-		GridSizeY: layout.GridSizeY,
-		SeatCount: layout.SeatCount,
-		CreatedBy: &createdByUUID,
-	}, nil
-}
-
-func CreateLayoutPositionDTOsToEntities(layoutPositions []dto.CreateLayoutPositionDTO) []entities.LayoutPositions {
-	result := make([]entities.LayoutPositions, 0, len(layoutPositions))
-	for _, position := range layoutPositions {
-		result = append(result, entities.LayoutPositions{
-			Row:          position.Row,
-			Col:          position.Col,
-			PositionType: position.PositionType,
-			IsUsed:       position.IsUsed,
-		})
+	if layout.LayoutConfig == nil {
+		layout.LayoutConfig = entities.LayoutConfig{} // empty slice, bukan nil
 	}
-	return result
+
+	return entities.Layouts{
+		Name:         layout.Name,
+		GridSizeX:    layout.GridSizeX,
+		GridSizeY:    layout.GridSizeY,
+		SeatCount:    layout.SeatCount,
+		CreatedBy:    &createdByUUID,
+		LayoutConfig: layout.LayoutConfig,
+	}, nil
 }

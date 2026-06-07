@@ -95,6 +95,9 @@ func (h *LayoutHandler) CreateLayout(c fiber.Ctx) error {
 
 	req.CreatedBy = ownerUserID
 
+	h.log.Info("create req")
+	h.log.Info(req)
+
 	layout, err := h.layoutService.CreateLayout(c.Context(), req)
 	if err != nil {
 		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)

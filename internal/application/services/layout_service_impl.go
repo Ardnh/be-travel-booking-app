@@ -76,9 +76,10 @@ func (s *LayoutServiceImpl) CreateLayout(ctx context.Context, layout dto.CreateL
 		return nil, errorConst.ErrInternalServer
 	}
 
-	layoutPositionEntities := mapper.CreateLayoutPositionDTOsToEntities(layout.LayoutPositions)
+	s.log.Info("layout entities")
+	s.log.Info(layoutEntity)
 
-	createdLayout, err := s.LayoutRepository.CreateLayout(ctx, layoutEntity, layoutPositionEntities)
+	createdLayout, err := s.LayoutRepository.CreateLayout(ctx, layoutEntity)
 	if err != nil {
 		s.log.WithFields(logrus.Fields{
 			"error": err,
@@ -123,8 +124,7 @@ func (s *LayoutServiceImpl) UpdateLayout(ctx context.Context, layoutID string, l
 		currentLayout.SeatCount = layout.SeatCount
 	}
 
-	layoutPositionEntities := mapper.CreateLayoutPositionDTOsToEntities(layout.LayoutPositions)
-	updatedLayout, err := s.LayoutRepository.UpdateLayout(ctx, *currentLayout, layoutPositionEntities)
+	updatedLayout, err := s.LayoutRepository.UpdateLayout(ctx, *currentLayout)
 	if err != nil {
 		s.log.WithFields(logrus.Fields{
 			"error": err,

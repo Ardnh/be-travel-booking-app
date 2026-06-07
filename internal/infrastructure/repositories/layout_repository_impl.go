@@ -101,47 +101,17 @@ func (r *LayoutRepositoryImpl) GetLayout(ctx context.Context, page int, pageSize
 	return layouts, total, nil
 }
 
-func (r *LayoutRepositoryImpl) CreateLayout(ctx context.Context, layout entities.Layouts, layoutPositions []entities.LayoutPositions) (*entities.Layouts, error) {
-	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		if err := tx.Create(&layout).Error; err != nil {
-			return err
-		}
-		for _, lp := range layoutPositions {
-			lp.LayoutID = layout.LayoutID
-		}
-		if err := tx.CreateInBatches(layoutPositions, 100).Error; err != nil {
-			return err
-		}
-		return nil
-	})
-	if err != nil {
+func (r *LayoutRepositoryImpl) CreateLayout(ctx context.Context, layout entities.Layouts) (*entities.Layouts, error) {
+	if err := r.db.WithContext(ctx).Create(&layout).Error; err != nil {
 		return nil, err
 	}
 	return &layout, nil
 }
 
-func (r *LayoutRepositoryImpl) UpdateLayout(ctx context.Context, layout entities.Layouts, layoutPositions []entities.LayoutPositions) (*entities.Layouts, error) {
-	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		if err := tx.Model(&entities.Layouts{}).
-			Where("layout_id = ?", layout.LayoutID).
-			Updates(layout).Error; err != nil {
-			return err
-		}
-		if err := tx.Where("layout_id = ?", layout.LayoutID).
-			Delete(&entities.LayoutPositions{}).Error; err != nil {
-			return err
-		}
-		for _, lp := range layoutPositions {
-			lp.LayoutID = layout.LayoutID
-		}
-		if len(layoutPositions) > 0 {
-			if err := tx.CreateInBatches(layoutPositions, 100).Error; err != nil {
-				return err
-			}
-		}
-		return nil
-	})
-	if err != nil {
+func (r *LayoutRepositoryImpl) UpdateLayout(ctx context.Context, layout entities.Layouts) (*entities.Layouts, error) {
+	if err := r.db.WithContext(ctx).Model(&entities.Layouts{}).
+		Where("layout_id = ?", layout.LayoutID).
+		Updates(layout).Error; err != nil {
 		return nil, err
 	}
 	return &layout, nil

@@ -11,9 +11,10 @@ http:
     data: |-
       {
         "name": "Bus",
-        "gridSizeX": 6,
-        "gridSizeY": 18,
-        "seatCount": 60,
+        "grid_size_x": 6,
+        "grid_size_y": 18,
+        "seat_count": 60,
+        "layout_config": [],
         "createdBy": "a9ff86f9-2b60-4cb4-bc48-6729de27140a"
       }
   auth: inherit

@@ -18,9 +18,8 @@ type SeatHolds struct {
 	CreatedAt        time.Time `gorm:"autoCreateTime" json:"created_at"`
 
 	// // Relations
-	Schedule       Schedules
-	LayoutPosition LayoutPositions
-	User           Users
+	Schedule Schedules
+	User     Users
 }
 
 func (SeatHolds) TableName() string { return "seat_holds" }

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strconv"
+
 	"github.com/ardnh/be-travel-booking-app/internal/application/dto"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/services"
 	httpResponses "github.com/ardnh/be-travel-booking-app/internal/interfaces/http/responses"
@@ -41,12 +43,37 @@ func (h *ServiceTypeHandler) GetServiceTypeByID(c fiber.Ctx) error {
 }
 
 func (h *ServiceTypeHandler) GetAllServiceTypes(c fiber.Ctx) error {
-	serviceTypes, err := h.serviceTypeService.GetAllServiceTypes(c.Context())
+	page := c.Query("page", "1")
+	pageSize := c.Query("page_size", "30")
+	search := c.Query("search")
+	sortBy := c.Query("sort_by", "created_at")
+	sortOrder := c.Query("sort_order", "desc")
+
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
+	}
+
+	pageSizeInt, err := strconv.Atoi(pageSize)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
+	}
+
+	serviceTypes, total, err := h.serviceTypeService.GetAllServiceTypes(c.Context(), pageInt, pageSizeInt, search, sortBy, sortOrder)
 	if err != nil {
 		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
 	}
 
-	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Service types retrieved successfully", serviceTypes)
+	pagination := dto.Pagination{
+		CurrentPage: pageInt,
+		PageSize:    pageSizeInt,
+		TotalItems:  int(total),
+		TotalPages:  (int(total) + pageSizeInt - 1) / pageSizeInt,
+		HasNext:     pageInt*pageSizeInt < int(total),
+		HasPrevious: pageInt > 1,
+	}
+
+	return httpResponses.NewSuccessResponseWithPagination(c, fiber.StatusOK, "Service types retrieved successfully", serviceTypes, pagination)
 }
 
 func (h *ServiceTypeHandler) CreateServiceType(c fiber.Ctx) error {
@@ -60,14 +87,25 @@ func (h *ServiceTypeHandler) CreateServiceType(c fiber.Ctx) error {
 	}
 
 	// Get user ID from context (assuming set by auth middleware)
-	userID := c.Locals("userID").(uuid.UUID)
-
-	err := h.serviceTypeService.CreateServiceType(c.Context(), req, userID)
-	if err != nil {
-		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
+	userIDStr, ok := c.Locals("user_id").(string)
+	h.log.Errorf("Parse owner user ID from c.local: %v", userIDStr)
+	if !ok || userIDStr == "" {
+		h.log.Errorf("User ID not found in context")
+		return httpResponses.NewErrorResponse(c, fiber.ErrUnauthorized.Code, fiber.ErrUnauthorized.Message, "User ID not found")
 	}
 
-	return httpResponses.NewSuccessResponse(c, fiber.StatusCreated, "Service type created successfully", nil)
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		h.log.Errorf("Invalid owner user ID: %v", userID)
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, "Invalid owner user ID")
+	}
+
+	serviceType, errCreate := h.serviceTypeService.CreateServiceType(c.Context(), req, userID)
+	if errCreate != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, errCreate)
+	}
+
+	return httpResponses.NewSuccessResponse(c, fiber.StatusCreated, "Service type created successfully", serviceType)
 }
 
 func (h *ServiceTypeHandler) UpdateServiceType(c fiber.Ctx) error {
@@ -82,12 +120,12 @@ func (h *ServiceTypeHandler) UpdateServiceType(c fiber.Ctx) error {
 		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
 	}
 
-	err = h.serviceTypeService.UpdateServiceType(c.Context(), serviceTypeID, req)
+	serviceType, err := h.serviceTypeService.UpdateServiceType(c.Context(), serviceTypeID, req)
 	if err != nil {
 		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
 	}
 
-	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Service type updated successfully", nil)
+	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Service type updated successfully", serviceType)
 }
 
 func (h *ServiceTypeHandler) DeleteServiceType(c fiber.Ctx) error {

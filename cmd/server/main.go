@@ -64,7 +64,6 @@ func main() {
 	poolPointRepo := repositories.NewPoolPointRepository(db, redisDb)
 	vendorRepo := repositories.NewVendorRepository(db, redisDb)
 	layoutRepo := repositories.NewLayoutRepository(db, redisDb)
-	layoutPositionRepo := repositories.NewLayoutPositionRepository(db, redisDb)
 	scheduleRepo := repositories.NewScheduleRepository(db, redisDb)
 	userRepo := repositories.NewUsersRepository(db, redisDb)
 	bookingRepo := repositories.NewBookingRepository(db, redisDb)
@@ -74,7 +73,6 @@ func main() {
 	poolPointService := services.NewPoolPointServiceImpl(poolPointRepo, logger)
 	vendorService := services.NewVendorServiceImpl(vendorRepo, enforcer, logger)
 	layoutService := services.NewLayoutServiceImpl(layoutRepo, logger)
-	layoutPositionService := services.NewLayoutPositionServiceImpl(layoutPositionRepo, logger)
 	scheduleService := services.NewScheduleServiceImpl(scheduleRepo, logger)
 	authService := services.NewAuthService(userRepo, logger, cfg, enforcer)
 	usersService := services.NewUsersServiceImpl(userRepo, enforcer, logger)
@@ -85,7 +83,6 @@ func main() {
 	poolPointHandler := handlers.NewPoolPointHandler(poolPointService, validator, logger)
 	vendorHandler := handlers.NewVendorHandler(vendorService, validator, logger)
 	layoutHandler := handlers.NewLayoutHandler(layoutService, validator, logger)
-	layoutPositionHandler := handlers.NewLayoutPositionHandler(layoutPositionService, validator, logger)
 	scheduleHandler := handlers.NewScheduleHandler(scheduleService, validator, logger)
 	authHandler := handlers.NewAuthHandler(authService, validator, logger)
 	usersHandler := handlers.NewUsersHandler(usersService, validator, logger)
@@ -112,7 +109,6 @@ func main() {
 		poolPointHandler,
 		vendorHandler,
 		layoutHandler,
-		layoutPositionHandler,
 		scheduleHandler,
 		authHandler,
 		usersHandler,

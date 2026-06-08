@@ -39,15 +39,15 @@ func (s *ServiceTypeServiceImpl) GetServiceTypeByID(ctx context.Context, service
 	return serviceType, nil
 }
 
-func (s *ServiceTypeServiceImpl) GetAllServiceTypes(ctx context.Context) ([]entities.ServiceTypes, error) {
-	serviceTypes, err := s.serviceTypeRepository.GetAllServiceTypes(ctx)
+func (s *ServiceTypeServiceImpl) GetAllServiceTypes(ctx context.Context, page int, pageSize int, search string, sortBy string, sortOrder string) ([]entities.ServiceTypes, int64, error) {
+	serviceTypes, total, err := s.serviceTypeRepository.GetAllServiceTypes(ctx, page, pageSize, search, sortBy, sortOrder)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return serviceTypes, nil
+	return serviceTypes, total, nil
 }
 
-func (s *ServiceTypeServiceImpl) CreateServiceType(ctx context.Context, req dto.CreateServiceTypeDTO, createdBy uuid.UUID) error {
+func (s *ServiceTypeServiceImpl) CreateServiceType(ctx context.Context, req dto.CreateServiceTypeDTO, createdBy uuid.UUID) (*entities.ServiceTypes, error) {
 	serviceType := &entities.ServiceTypes{
 		ServiceTypeID:      uuid.New(),
 		Name:               req.Name,
@@ -61,15 +61,15 @@ func (s *ServiceTypeServiceImpl) CreateServiceType(ctx context.Context, req dto.
 		CreatedBy:          createdBy,
 	}
 
-	err := s.serviceTypeRepository.CreateServiceType(ctx, *serviceType)
+	createdServiceType, err := s.serviceTypeRepository.CreateServiceType(ctx, *serviceType)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return createdServiceType, nil
 }
 
-func (s *ServiceTypeServiceImpl) UpdateServiceType(ctx context.Context, serviceTypeID uuid.UUID, req dto.UpdateServiceTypeDTO) error {
+func (s *ServiceTypeServiceImpl) UpdateServiceType(ctx context.Context, serviceTypeID uuid.UUID, req dto.UpdateServiceTypeDTO) (*entities.ServiceTypes, error) {
 	serviceType, err := s.serviceTypeRepository.GetServiceTypeByID(ctx, serviceTypeID)
 	if err != nil {
 		if errors.Is(err, errorConst.ErrNotFound) {
@@ -77,9 +77,9 @@ func (s *ServiceTypeServiceImpl) UpdateServiceType(ctx context.Context, serviceT
 				"service_type_id": serviceTypeID,
 				"error":           err,
 			}).Error("service type not found")
-			return errorConst.ErrNotFound
+			return nil, errorConst.ErrNotFound
 		}
-		return err
+		return nil, err
 	}
 
 	if req.Name != nil {
@@ -107,12 +107,12 @@ func (s *ServiceTypeServiceImpl) UpdateServiceType(ctx context.Context, serviceT
 		serviceType.Status = *req.Status
 	}
 
-	err = s.serviceTypeRepository.UpdateServiceType(ctx, *serviceType)
+	updatedServiceType, err := s.serviceTypeRepository.UpdateServiceType(ctx, *serviceType)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return updatedServiceType, nil
 }
 
 func (s *ServiceTypeServiceImpl) DeleteServiceType(ctx context.Context, serviceTypeID uuid.UUID) error {

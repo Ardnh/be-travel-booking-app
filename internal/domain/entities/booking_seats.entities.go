@@ -18,9 +18,8 @@ type BookingSeats struct {
 	CreatedAt        time.Time `gorm:"autoCreateTime" json:"created_at"`
 
 	// Relations
-	Booking        Bookings
-	Schedule       Schedules
-	LayoutPosition LayoutPositions
+	Booking  Bookings
+	Schedule Schedules
 }
 
 func (BookingSeats) TableName() string { return "booking_seats" }

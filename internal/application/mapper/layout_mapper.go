@@ -1,8 +1,6 @@
 package mapper
 
 import (
-	"fmt"
-
 	"github.com/ardnh/be-travel-booking-app/internal/application/dto"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/entities"
 	"github.com/google/uuid"
@@ -21,8 +19,6 @@ func LayoutToDTO(layout *entities.Layouts) *dto.LayoutDTO {
 	if layout.CreatedBy != nil {
 		createdBy = layout.CreatedBy.String()
 	}
-
-	fmt.Println(layout.LayoutConfig)
 
 	return &dto.LayoutDTO{
 		LayoutID:     layout.LayoutID.String(),

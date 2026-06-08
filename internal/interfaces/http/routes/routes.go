@@ -11,7 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func SetupAPIRoutes(app *fiber.App, log *logrus.Logger, enforcer *casbin.Enforcer, serviceTypeHandler *handlers.ServiceTypeHandler, poolPointHandler *handlers.PoolPointHandler, vendorHandler *handlers.VendorHandler, layoutHandler *handlers.LayoutHandler, layoutPositionHandler *handlers.LayoutPositionHandler, scheduleHandler *handlers.ScheduleHandler, authHandler *handlers.AuthHandler, usersHandler *handlers.UsersHandler, bookingHandler *handlers.BookingHandler, validator *validator.Validate) {
+func SetupAPIRoutes(app *fiber.App, log *logrus.Logger, enforcer *casbin.Enforcer, serviceTypeHandler *handlers.ServiceTypeHandler, poolPointHandler *handlers.PoolPointHandler, vendorHandler *handlers.VendorHandler, layoutHandler *handlers.LayoutHandler, scheduleHandler *handlers.ScheduleHandler, authHandler *handlers.AuthHandler, usersHandler *handlers.UsersHandler, bookingHandler *handlers.BookingHandler, validator *validator.Validate) {
 
 	// Middleware
 	casbinMw := middleware.NewCasbinMiddleware(enforcer, log)
@@ -60,16 +60,6 @@ func SetupAPIRoutes(app *fiber.App, log *logrus.Logger, enforcer *casbin.Enforce
 	layouts.Post("/", casbinMw.Authorize(constants.ResourceLayouts, constants.ActionCreate), layoutHandler.CreateLayout)
 	layouts.Put("/:id", casbinMw.Authorize(constants.ResourceLayouts, constants.ActionUpdate), layoutHandler.UpdateLayout)
 	layouts.Delete("/:id", casbinMw.Authorize(constants.ResourceLayouts, constants.ActionDelete), layoutHandler.DeleteLayout)
-
-	// Layout Position routes
-	layoutPositions := api.Group("/layout-positions", authMiddleware.Authenticate())
-	layoutPositions.Get("/", casbinMw.Authorize(constants.ResourceLayoutPositions, constants.ActionRead), layoutPositionHandler.GetAllLayoutPositions)
-	layoutPositions.Get("/:id", casbinMw.Authorize(constants.ResourceLayoutPositions, constants.ActionRead), layoutPositionHandler.GetLayoutPositionByID)
-	layoutPositions.Put("/:id", casbinMw.Authorize(constants.ResourceLayoutPositions, constants.ActionUpdate), layoutPositionHandler.UpdateLayoutPosition)
-	layoutPositions.Delete("/:id", casbinMw.Authorize(constants.ResourceLayoutPositions, constants.ActionDelete), layoutPositionHandler.DeleteLayoutPosition)
-
-	layouts.Get("/:layoutId/layout-positions", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourceLayoutPositions, constants.ActionRead), layoutPositionHandler.GetLayoutPositionsByLayoutID)
-	layouts.Post("/:layoutId/layout-positions", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourceLayoutPositions, constants.ActionCreate), layoutPositionHandler.CreateLayoutPosition)
 
 	// Schedule routes
 	schedules := api.Group("/schedules", authMiddleware.Authenticate())

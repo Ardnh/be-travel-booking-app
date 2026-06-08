@@ -55,5 +55,5 @@ type CreateLayoutDTO struct {
 	GridSizeY    int                   `json:"grid_size_y" validate:"required,min=1"`
 	SeatCount    int                   `json:"seat_count" validate:"required,min=1"`
 	CreatedBy    string                `json:"created_by"`
-	LayoutConfig entities.LayoutConfig `json:"layouts_config"`
+	LayoutConfig entities.LayoutConfig `json:"layout_config"`
 }

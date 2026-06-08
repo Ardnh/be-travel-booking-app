@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ardnh/be-travel-booking-app/internal/application/dto"
 	"github.com/ardnh/be-travel-booking-app/internal/application/mapper"
@@ -64,6 +65,10 @@ func (s *LayoutServiceImpl) GetLayout(ctx context.Context, page int, pageSize in
 	}
 
 	resultDto := mapper.LayoutsToDTO(result)
+
+	fmt.Println("Result layout dto")
+	fmt.Println(resultDto)
+
 	return resultDto, total, nil
 }
 
@@ -75,9 +80,6 @@ func (s *LayoutServiceImpl) CreateLayout(ctx context.Context, layout dto.CreateL
 		}).Error("failed to map layout dto to entity")
 		return nil, errorConst.ErrInternalServer
 	}
-
-	s.log.Info("layout entities")
-	s.log.Info(layoutEntity)
 
 	createdLayout, err := s.LayoutRepository.CreateLayout(ctx, layoutEntity)
 	if err != nil {
@@ -122,6 +124,10 @@ func (s *LayoutServiceImpl) UpdateLayout(ctx context.Context, layoutID string, l
 
 	if currentLayout.SeatCount != layout.SeatCount {
 		currentLayout.SeatCount = layout.SeatCount
+	}
+
+	if layout.LayoutConfig != nil {
+		currentLayout.LayoutConfig = layout.LayoutConfig
 	}
 
 	updatedLayout, err := s.LayoutRepository.UpdateLayout(ctx, *currentLayout)

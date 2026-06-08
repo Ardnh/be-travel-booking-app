@@ -10,8 +10,14 @@ http:
     type: json
     data: |-
       {
-        "name": "Travel Service",
-        "description": "Description here"
+        "name": "Door to door",
+        "unique_code": "DOOR-TO-DOOR",
+        "description": "Antar jemput langsung ke tempat",
+        "need_chair": true,
+        "need_pickup_address": true,
+        "need_dropoff_address": true,
+        "display_order": 1,
+        "status": true
       }
   auth: inherit
 

@@ -16,12 +16,14 @@ type Pools struct {
 	Address     string    `gorm:"type:text" json:"address"`
 	City        string    `gorm:"type:varchar(100)" json:"city"`
 	Province    string    `gorm:"type:varchar(100)" json:"province"`
+	District    string    `gorm:"type:varchar(100)" json:"district"`
 	Latitude    float64   `gorm:"type:decimal(10,7)" json:"latitude"`
 	Longitude   float64   `gorm:"type:decimal(10,7)" json:"longitude"`
 	OpenTime    string    `gorm:"type:time" json:"open_time"`
 	CloseTime   string    `gorm:"type:time" json:"close_time"`
 	Status      string    `gorm:"type:varchar(50);default:'active'" json:"status"`
 	Description string    `gorm:"type:text" json:"description"`
+	EmbedURL    string    `gorm:"type:text" json:"embed_url"`
 
 	// Relations
 	Vendor Vendors

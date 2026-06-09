@@ -55,14 +55,14 @@ func (s *PoolPointServiceImpl) GetPoolPointsByVendorID(ctx context.Context, vend
 	return poolPoints, nil
 }
 
-func (s *PoolPointServiceImpl) CreatePoolPoint(ctx context.Context, req dto.CreatePoolsDTO) error {
+func (s *PoolPointServiceImpl) CreatePoolPoint(ctx context.Context, req dto.CreatePoolsDTO) (*entities.Pools, error) {
 	vendorID, err := uuid.Parse(req.VendorID)
 	if err != nil {
 		s.log.WithFields(logrus.Fields{
 			"vendor_id": req.VendorID,
 			"error":     err,
 		}).Error("failed to parse vendor id")
-		return errorConst.ErrBadRequest
+		return nil, errorConst.ErrBadRequest
 	}
 
 	poolPoint := &entities.Pools{
@@ -73,23 +73,25 @@ func (s *PoolPointServiceImpl) CreatePoolPoint(ctx context.Context, req dto.Crea
 		Address:     req.Address,
 		City:        req.City,
 		Province:    req.Province,
+		District:    req.District,
 		Latitude:    req.Latitude,
 		Longitude:   req.Longitude,
 		OpenTime:    req.OpenTime,
 		CloseTime:   req.CloseTime,
 		Status:      req.Status,
-		Description: *req.Description,
+		Description: req.Description,
+		EmbedURL:    req.EmbedURL,
 	}
 
-	err = s.poolPointRepository.CreatePoolPoint(ctx, *poolPoint)
+	createdPoolPoint, err := s.poolPointRepository.CreatePoolPoint(ctx, *poolPoint)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return createdPoolPoint, nil
 }
 
-func (s *PoolPointServiceImpl) UpdatePoolPoint(ctx context.Context, poolID uuid.UUID, req dto.UpdatePoolsDTO) error {
+func (s *PoolPointServiceImpl) UpdatePoolPoint(ctx context.Context, poolID uuid.UUID, req dto.UpdatePoolsDTO) (*entities.Pools, error) {
 	poolPoint, err := s.poolPointRepository.GetPoolPointByID(ctx, poolID)
 	if err != nil {
 		if errors.Is(err, errorConst.ErrNotFound) {
@@ -97,9 +99,9 @@ func (s *PoolPointServiceImpl) UpdatePoolPoint(ctx context.Context, poolID uuid.
 				"pool_id": poolID,
 				"error":   err,
 			}).Error("pool point not found")
-			return errorConst.ErrNotFound
+			return nil, errorConst.ErrNotFound
 		}
-		return err
+		return nil, err
 	}
 
 	if req.VendorID != nil {
@@ -109,7 +111,7 @@ func (s *PoolPointServiceImpl) UpdatePoolPoint(ctx context.Context, poolID uuid.
 				"vendor_id": *req.VendorID,
 				"error":     err,
 			}).Error("failed to parse vendor id")
-			return errorConst.ErrBadRequest
+			return nil, errorConst.ErrBadRequest
 		}
 		poolPoint.VendorID = vendorID
 	}
@@ -127,6 +129,9 @@ func (s *PoolPointServiceImpl) UpdatePoolPoint(ctx context.Context, poolID uuid.
 	}
 	if req.Province != nil {
 		poolPoint.Province = *req.Province
+	}
+	if req.District != nil {
+		poolPoint.District = *req.District
 	}
 	if req.Latitude != nil {
 		poolPoint.Latitude = *req.Latitude
@@ -146,13 +151,16 @@ func (s *PoolPointServiceImpl) UpdatePoolPoint(ctx context.Context, poolID uuid.
 	if req.Description != nil {
 		poolPoint.Description = *req.Description
 	}
-
-	err = s.poolPointRepository.UpdatePoolPoint(ctx, *poolPoint)
-	if err != nil {
-		return err
+	if req.EmbedURL != nil {
+		poolPoint.EmbedURL = *req.EmbedURL
 	}
 
-	return nil
+	updatedPoolPoint, err := s.poolPointRepository.UpdatePoolPoint(ctx, *poolPoint)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedPoolPoint, nil
 }
 
 func (s *PoolPointServiceImpl) DeletePoolPoint(ctx context.Context, poolID uuid.UUID) error {

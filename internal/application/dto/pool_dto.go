@@ -9,12 +9,14 @@ type CreatePoolsDTO struct {
 	Address     string  `json:"address" validate:"required"`
 	City        string  `json:"city" validate:"required"`
 	Province    string  `json:"province" validate:"required"`
+	District    string  `json:"district" validate:"required"`
 	Latitude    float64 `json:"latitude" validate:"required"`
 	Longitude   float64 `json:"longitude" validate:"required"`
 	OpenTime    string  `json:"open_time" validate:"required"`
 	CloseTime   string  `json:"close_time" validate:"required"`
 	Status      string  `json:"status"`
-	Description *string `json:"description,omitempty"`
+	Description string  `json:"description"`
+	EmbedURL    string  `json:"embed_url" validate:"required"`
 }
 
 type UpdatePoolsDTO struct {
@@ -24,12 +26,14 @@ type UpdatePoolsDTO struct {
 	Address     *string  `json:"address,omitempty"`
 	City        *string  `json:"city,omitempty"`
 	Province    *string  `json:"province,omitempty"`
+	District    *string  `json:"district,omitempty"`
 	Latitude    *float64 `json:"latitude,omitempty"`
 	Longitude   *float64 `json:"longitude,omitempty"`
 	OpenTime    *string  `json:"open_time,omitempty"`
 	CloseTime   *string  `json:"close_time,omitempty"`
 	Status      *string  `json:"status,omitempty"`
 	Description *string  `json:"description,omitempty"`
+	EmbedURL    *string  `json:"embed_url,omitempty"`
 }
 
 type PoolsResponseDTO struct {
@@ -40,12 +44,14 @@ type PoolsResponseDTO struct {
 	Address     string    `json:"address"`
 	City        string    `json:"city"`
 	Province    string    `json:"province"`
+	District    string    `json:"district"`
 	Latitude    float64   `json:"latitude"`
 	Longitude   float64   `json:"longitude"`
 	OpenTime    string    `json:"open_time"`
 	CloseTime   string    `json:"close_time"`
 	Status      string    `json:"status"`
 	Description *string   `json:"description,omitempty"`
+	EmbedURL    string    `json:"embed_url"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }

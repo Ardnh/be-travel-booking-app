@@ -74,12 +74,12 @@ func (h *PoolPointHandler) CreatePoolPoint(c fiber.Ctx) error {
 		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, validator_utils.FormatValidationErrors(err))
 	}
 
-	err := h.poolPointService.CreatePoolPoint(c.Context(), req)
+	poolPoint, err := h.poolPointService.CreatePoolPoint(c.Context(), req)
 	if err != nil {
 		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
 	}
 
-	return httpResponses.NewSuccessResponse(c, fiber.StatusCreated, "Pool point created successfully", nil)
+	return httpResponses.NewSuccessResponse(c, fiber.StatusCreated, "Pool point created successfully", poolPoint)
 }
 
 func (h *PoolPointHandler) UpdatePoolPoint(c fiber.Ctx) error {
@@ -94,12 +94,12 @@ func (h *PoolPointHandler) UpdatePoolPoint(c fiber.Ctx) error {
 		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
 	}
 
-	err = h.poolPointService.UpdatePoolPoint(c.Context(), poolID, req)
+	poolPoint, err := h.poolPointService.UpdatePoolPoint(c.Context(), poolID, req)
 	if err != nil {
 		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
 	}
 
-	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Pool point updated successfully", nil)
+	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Pool point updated successfully", poolPoint)
 }
 
 func (h *PoolPointHandler) DeletePoolPoint(c fiber.Ctx) error {

@@ -54,20 +54,21 @@ func (r *poolPointRepositoryImpl) GetPoolPointsByVendorID(ctx context.Context, v
 	return poolPoints, nil
 }
 
-func (r *poolPointRepositoryImpl) CreatePoolPoint(ctx context.Context, poolPoint entities.Pools) error {
+func (r *poolPointRepositoryImpl) CreatePoolPoint(ctx context.Context, poolPoint entities.Pools) (*entities.Pools, error) {
 	err := r.db.WithContext(ctx).Create(&poolPoint).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return &poolPoint, nil
 }
 
-func (r *poolPointRepositoryImpl) UpdatePoolPoint(ctx context.Context, poolPoint entities.Pools) error {
-	err := r.db.WithContext(ctx).Save(&poolPoint).Error
-	if err != nil {
-		return err
+func (r *poolPointRepositoryImpl) UpdatePoolPoint(ctx context.Context, poolPoint entities.Pools) (*entities.Pools, error) {
+	if err := r.db.WithContext(ctx).Model(&entities.Pools{}).
+		Where("pool_id = ?", poolPoint.PoolID).
+		Updates(poolPoint).Error; err != nil {
+		return nil, err
 	}
-	return nil
+	return &poolPoint, nil
 }
 
 func (r *poolPointRepositoryImpl) DeletePoolPoint(ctx context.Context, poolID uuid.UUID) error {

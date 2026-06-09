@@ -10,9 +10,9 @@ http:
     type: json
     data: |-
       {
-        "name": "Door to door",
-        "unique_code": "DOOR-TO-DOOR",
-        "description": "Antar jemput langsung ke tempat",
+        "name": "Pool to Pool",
+        "unique_code": "POOL-TO-POOL",
+        "description": "Antar jemput antar pool dari dan di kota tujuan",
         "need_chair": true,
         "need_pickup_address": true,
         "need_dropoff_address": true,

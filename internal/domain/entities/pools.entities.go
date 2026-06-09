@@ -7,7 +7,6 @@ import (
 // ============================================================
 // Pool
 // ============================================================
-
 type Pools struct {
 	PoolID      uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"pool_id"`
 	VendorID    uuid.UUID `gorm:"type:uuid;not null;index" json:"vendor_id"`
@@ -19,8 +18,8 @@ type Pools struct {
 	District    string    `gorm:"type:varchar(100)" json:"district"`
 	Latitude    float64   `gorm:"type:decimal(10,7)" json:"latitude"`
 	Longitude   float64   `gorm:"type:decimal(10,7)" json:"longitude"`
-	OpenTime    string    `gorm:"type:time" json:"open_time"`
-	CloseTime   string    `gorm:"type:time" json:"close_time"`
+	OpenTime    string    `gorm:"type:varchar(5)" json:"open_time"`
+	CloseTime   string    `gorm:"type:varchar(5)" json:"close_time"`
 	Status      string    `gorm:"type:varchar(50);default:'active'" json:"status"`
 	Description string    `gorm:"type:text" json:"description"`
 	EmbedURL    string    `gorm:"type:text" json:"embed_url"`

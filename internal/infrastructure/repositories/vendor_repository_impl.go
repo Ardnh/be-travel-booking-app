@@ -48,20 +48,51 @@ func (r *vendorRepositoryImpl) GetVendorByOwnerUserID(ctx context.Context, owner
 	return &vendor, nil
 }
 
-func (r *vendorRepositoryImpl) GetAllVendors(ctx context.Context, limit, offset int) ([]entities.Vendors, int64, error) {
+func (r *vendorRepositoryImpl) GetAllVendors(ctx context.Context, page int, pageSize int, search string, sortBy string, sortOrder string) ([]entities.Vendors, int64, error) {
 	var vendors []entities.Vendors
 	var total int64
-	
-	// Get total count
-	if err := r.db.WithContext(ctx).Model(&entities.Vendors{}).Count(&total).Error; err != nil {
+
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 || pageSize >= 1000 {
+		pageSize = 10
+	}
+
+	offset := (page - 1) * pageSize
+
+	baseQuery := r.db.WithContext(ctx).
+		Model(&entities.Vendors{})
+
+	if search != "" {
+		baseQuery = baseQuery.Where("business_name ILIKE ?", "%"+search+"%")
+	}
+
+	if err := baseQuery.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
-	
-	// Get paginated results
-	if err := r.db.WithContext(ctx).Limit(limit).Offset(offset).Find(&vendors).Error; err != nil {
+
+	allowedSort := map[string]bool{
+		"business_name": true,
+		"created_at":    true,
+	}
+
+	if !allowedSort[sortBy] {
+		sortBy = "created_at"
+	}
+
+	if sortOrder != "asc" && sortOrder != "desc" {
+		sortOrder = "desc"
+	}
+
+	if err := baseQuery.
+		Order(sortBy + " " + sortOrder).
+		Limit(pageSize).
+		Offset(offset).
+		Find(&vendors).Error; err != nil {
 		return nil, 0, err
 	}
-	
+
 	return vendors, total, nil
 }
 

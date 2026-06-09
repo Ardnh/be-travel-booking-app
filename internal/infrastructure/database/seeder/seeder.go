@@ -24,6 +24,7 @@ func Seed(db *gorm.DB, casbinEnforcer *casbin.Enforcer, log *logrus.Logger) erro
 			return fmt.Errorf("failed to hash password: %w", err)
 		}
 
+		// platform
 		admin := entities.Users{
 			Name:         "Ardan",
 			Email:        "platform-owner@example.com",

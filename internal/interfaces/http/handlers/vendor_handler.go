@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"math"
 	"strconv"
 
 	"github.com/ardnh/be-travel-booking-app/internal/application/dto"
@@ -75,40 +74,42 @@ func (h *VendorHandler) GetVendorByOwnerUserID(c fiber.Ctx) error {
 
 func (h *VendorHandler) GetAllVendors(c fiber.Ctx) error {
 	h.log.Infof("Starting GetAllVendors")
-	// Parse pagination params
-	page, err := strconv.Atoi(c.Query("page", "1"))
-	if err != nil || page < 1 {
-		page = 1
+
+	page := c.Query("page", "1")
+	pageSize := c.Query("page_size", "10")
+	search := c.Query("search")
+	sortBy := c.Query("sort_by", "created_at")
+	sortOrder := c.Query("sort_order", "desc")
+
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
 	}
 
-	limit, err := strconv.Atoi(c.Query("limit", "10"))
-	if err != nil || limit < 1 {
-		limit = 10
+	pageSizeInt, err := strconv.Atoi(pageSize)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
 	}
 
-	h.log.Infof("Fetching vendors with page=%d, limit=%d", page, limit)
-	offset := (page - 1) * limit
+	h.log.Infof("Fetching vendors with page=%d, page_size=%d, search=%s, sort_by=%s, sort_order=%s", pageInt, pageSizeInt, search, sortBy, sortOrder)
 
-	vendors, total, err := h.vendorService.GetAllVendors(c.Context(), limit, offset)
+	vendors, total, err := h.vendorService.GetAllVendors(c.Context(), pageInt, pageSizeInt, search, sortBy, sortOrder)
 	if err != nil {
 		h.log.Errorf("Failed to get all vendors: %v", err)
 		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
 	}
 
-	totalPages := int(math.Ceil(float64(total) / float64(limit)))
-
-	meta := fiber.Map{
-		"page":        page,
-		"limit":       limit,
-		"total":       total,
-		"total_pages": totalPages,
+	pagination := dto.Pagination{
+		CurrentPage: pageInt,
+		PageSize:    pageSizeInt,
+		TotalItems:  int(total),
+		TotalPages:  (int(total) + pageSizeInt - 1) / pageSizeInt,
+		HasNext:     pageInt*pageSizeInt < int(total),
+		HasPrevious: pageInt > 1,
 	}
 
-	h.log.Infof("Successfully retrieved vendors. Total: %d, Page: %d, Total Pages: %d", total, page, totalPages)
-	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Vendors retrieved successfully", fiber.Map{
-		"data": vendors,
-		"meta": meta,
-	})
+	h.log.Infof("Successfully retrieved vendors. Total: %d, Page: %d, Total Pages: %d", total, pageInt, pagination.TotalPages)
+	return httpResponses.NewSuccessResponseWithPagination(c, fiber.StatusOK, "Vendors retrieved successfully", vendors, pagination)
 }
 
 func (h *VendorHandler) CreateVendor(c fiber.Ctx) error {

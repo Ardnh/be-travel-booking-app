@@ -36,22 +36,112 @@ func (r *poolPointRepositoryImpl) GetPoolPointByID(ctx context.Context, poolID u
 	return &poolPoint, nil
 }
 
-func (r *poolPointRepositoryImpl) GetAllPoolPoints(ctx context.Context) ([]entities.Pools, error) {
+func (r *poolPointRepositoryImpl) GetAllPoolPoints(ctx context.Context, page int, pageSize int, search string, sortBy string, sortOrder string) ([]entities.Pools, int64, error) {
 	var poolPoints []entities.Pools
-	err := r.db.WithContext(ctx).Find(&poolPoints).Error
-	if err != nil {
-		return nil, err
+	var total int64
+
+	if page <= 0 {
+		page = 1
 	}
-	return poolPoints, nil
+	if pageSize <= 0 || pageSize >= 1000 {
+		pageSize = 30
+	}
+
+	offset := (page - 1) * pageSize
+
+	baseQuery := r.db.WithContext(ctx).Model(&entities.Pools{})
+
+	if search != "" {
+		baseQuery = baseQuery.Where("name ILIKE ? OR city ILIKE ? OR province ILIKE ?", "%"+search+"%", "%"+search+"%", "%"+search+"%")
+	}
+
+	if err := baseQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	allowedSort := map[string]bool{
+		"name":       true,
+		"city":       true,
+		"province":   true,
+		"district":   true,
+		"status":     true,
+		"created_at": true,
+	}
+
+	if !allowedSort[sortBy] {
+		sortBy = "created_at"
+	}
+
+	if sortOrder != "asc" && sortOrder != "desc" {
+		sortOrder = "desc"
+	}
+
+	err := baseQuery.
+		Order(sortBy + " " + sortOrder).
+		Limit(pageSize).
+		Offset(offset).
+		Find(&poolPoints).Error
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return poolPoints, total, nil
 }
 
-func (r *poolPointRepositoryImpl) GetPoolPointsByVendorID(ctx context.Context, vendorID uuid.UUID) ([]entities.Pools, error) {
+func (r *poolPointRepositoryImpl) GetPoolPointsByVendorID(ctx context.Context, vendorID uuid.UUID, page int, pageSize int, search string, sortBy string, sortOrder string) ([]entities.Pools, int64, error) {
 	var poolPoints []entities.Pools
-	err := r.db.WithContext(ctx).Where("vendor_id = ?", vendorID).Find(&poolPoints).Error
-	if err != nil {
-		return nil, err
+	var total int64
+
+	if page <= 0 {
+		page = 1
 	}
-	return poolPoints, nil
+	if pageSize <= 0 || pageSize >= 1000 {
+		pageSize = 30
+	}
+
+	offset := (page - 1) * pageSize
+
+	baseQuery := r.db.WithContext(ctx).
+		Model(&entities.Pools{}).
+		Where("vendor_id = ?", vendorID)
+
+	if search != "" {
+		baseQuery = baseQuery.Where("name ILIKE ? OR city ILIKE ? OR province ILIKE ?", "%"+search+"%", "%"+search+"%", "%"+search+"%")
+	}
+
+	if err := baseQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	allowedSort := map[string]bool{
+		"name":       true,
+		"city":       true,
+		"province":   true,
+		"district":   true,
+		"status":     true,
+		"created_at": true,
+	}
+
+	if !allowedSort[sortBy] {
+		sortBy = "created_at"
+	}
+
+	if sortOrder != "asc" && sortOrder != "desc" {
+		sortOrder = "desc"
+	}
+
+	err := baseQuery.
+		Order(sortBy + " " + sortOrder).
+		Limit(pageSize).
+		Offset(offset).
+		Find(&poolPoints).Error
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return poolPoints, total, nil
 }
 
 func (r *poolPointRepositoryImpl) CreatePoolPoint(ctx context.Context, poolPoint entities.Pools) (*entities.Pools, error) {

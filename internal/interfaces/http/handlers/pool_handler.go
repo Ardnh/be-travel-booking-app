@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strconv"
+
 	"github.com/ardnh/be-travel-booking-app/internal/application/dto"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/services"
 	httpResponses "github.com/ardnh/be-travel-booking-app/internal/interfaces/http/responses"
@@ -41,12 +43,37 @@ func (h *PoolPointHandler) GetPoolPointByID(c fiber.Ctx) error {
 }
 
 func (h *PoolPointHandler) GetAllPoolPoints(c fiber.Ctx) error {
-	poolPoints, err := h.poolPointService.GetAllPoolPoints(c.Context())
+	page := c.Query("page", "1")
+	pageSize := c.Query("page_size", "30")
+	search := c.Query("search")
+	sortBy := c.Query("sort_by", "created_at")
+	sortOrder := c.Query("sort_order", "desc")
+
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
+	}
+
+	pageSizeInt, err := strconv.Atoi(pageSize)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
+	}
+
+	poolPoints, total, err := h.poolPointService.GetAllPoolPoints(c.Context(), pageInt, pageSizeInt, search, sortBy, sortOrder)
 	if err != nil {
 		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
 	}
 
-	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Pool points retrieved successfully", poolPoints)
+	pagination := dto.Pagination{
+		CurrentPage: pageInt,
+		PageSize:    pageSizeInt,
+		TotalItems:  int(total),
+		TotalPages:  (int(total) + pageSizeInt - 1) / pageSizeInt,
+		HasNext:     pageInt*pageSizeInt < int(total),
+		HasPrevious: pageInt > 1,
+	}
+
+	return httpResponses.NewSuccessResponseWithPagination(c, fiber.StatusOK, "Pool points retrieved successfully", poolPoints, pagination)
 }
 
 func (h *PoolPointHandler) GetPoolPointsByVendorID(c fiber.Ctx) error {
@@ -56,12 +83,37 @@ func (h *PoolPointHandler) GetPoolPointsByVendorID(c fiber.Ctx) error {
 		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, "Invalid vendor ID", err)
 	}
 
-	poolPoints, err := h.poolPointService.GetPoolPointsByVendorID(c.Context(), vendorID)
+	page := c.Query("page", "1")
+	pageSize := c.Query("page_size", "30")
+	search := c.Query("search")
+	sortBy := c.Query("sort_by", "created_at")
+	sortOrder := c.Query("sort_order", "desc")
+
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
+	}
+
+	pageSizeInt, err := strconv.Atoi(pageSize)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
+	}
+
+	poolPoints, total, err := h.poolPointService.GetPoolPointsByVendorID(c.Context(), vendorID, pageInt, pageSizeInt, search, sortBy, sortOrder)
 	if err != nil {
 		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
 	}
 
-	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Pool points retrieved successfully", poolPoints)
+	pagination := dto.Pagination{
+		CurrentPage: pageInt,
+		PageSize:    pageSizeInt,
+		TotalItems:  int(total),
+		TotalPages:  (int(total) + pageSizeInt - 1) / pageSizeInt,
+		HasNext:     pageInt*pageSizeInt < int(total),
+		HasPrevious: pageInt > 1,
+	}
+
+	return httpResponses.NewSuccessResponseWithPagination(c, fiber.StatusOK, "Pool points retrieved successfully", poolPoints, pagination)
 }
 
 func (h *PoolPointHandler) CreatePoolPoint(c fiber.Ctx) error {

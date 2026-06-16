@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{base_url}}/api/v1/vendors/:vendorId/pool-points"
+  url: "{{base_url}}/pool-points/vendors/538cf47c-38e5-4d56-b706-31dbe6b7db3b/pool-points"
   auth: inherit
 
 settings:

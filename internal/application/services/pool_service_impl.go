@@ -39,20 +39,20 @@ func (s *PoolPointServiceImpl) GetPoolPointByID(ctx context.Context, poolID uuid
 	return poolPoint, nil
 }
 
-func (s *PoolPointServiceImpl) GetAllPoolPoints(ctx context.Context) ([]entities.Pools, error) {
-	poolPoints, err := s.poolPointRepository.GetAllPoolPoints(ctx)
+func (s *PoolPointServiceImpl) GetAllPoolPoints(ctx context.Context, page int, pageSize int, search string, sortBy string, sortOrder string) ([]entities.Pools, int64, error) {
+	poolPoints, total, err := s.poolPointRepository.GetAllPoolPoints(ctx, page, pageSize, search, sortBy, sortOrder)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return poolPoints, nil
+	return poolPoints, total, nil
 }
 
-func (s *PoolPointServiceImpl) GetPoolPointsByVendorID(ctx context.Context, vendorID uuid.UUID) ([]entities.Pools, error) {
-	poolPoints, err := s.poolPointRepository.GetPoolPointsByVendorID(ctx, vendorID)
+func (s *PoolPointServiceImpl) GetPoolPointsByVendorID(ctx context.Context, vendorID uuid.UUID, page int, pageSize int, search string, sortBy string, sortOrder string) ([]entities.Pools, int64, error) {
+	poolPoints, total, err := s.poolPointRepository.GetPoolPointsByVendorID(ctx, vendorID, page, pageSize, search, sortBy, sortOrder)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return poolPoints, nil
+	return poolPoints, total, nil
 }
 
 func (s *PoolPointServiceImpl) CreatePoolPoint(ctx context.Context, req dto.CreatePoolsDTO) (*entities.Pools, error) {

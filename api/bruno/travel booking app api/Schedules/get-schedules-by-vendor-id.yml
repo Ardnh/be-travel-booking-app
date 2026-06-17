@@ -5,7 +5,11 @@ info:
 
 http:
   method: GET
-  url: "{{base_url}}/api/v1/vendors/:vendorId/schedules"
+  url: "{{base_url}}/vendors/:vendorId/schedules"
+  params:
+    - name: vendorId
+      value: ""
+      type: path
   auth: inherit
 
 settings:

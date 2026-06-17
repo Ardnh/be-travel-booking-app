@@ -10,8 +10,8 @@ import (
 
 type ScheduleService interface {
 	GetScheduleByID(ctx context.Context, scheduleID uuid.UUID) (*entities.Schedules, error)
-	GetAllSchedules(ctx context.Context) ([]entities.Schedules, error)
-	GetSchedulesByVendorID(ctx context.Context, vendorID uuid.UUID) ([]entities.Schedules, error)
+	GetAllSchedules(ctx context.Context, page int, pageSize int, search string, sortBy string, sortOrder string) ([]entities.Schedules, int64, error)
+	GetSchedulesByVendorID(ctx context.Context, vendorID uuid.UUID, page int, pageSize int, search string, sortBy string, sortOrder string) ([]entities.Schedules, int64, error)
 	CreateSchedule(ctx context.Context, req dto.CreateScheduleDTO) error
 	UpdateSchedule(ctx context.Context, scheduleID uuid.UUID, req dto.UpdateScheduleDTO) error
 	DeleteSchedule(ctx context.Context, scheduleID uuid.UUID) error

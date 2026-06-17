@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strconv"
+
 	"github.com/ardnh/be-travel-booking-app/internal/application/dto"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/services"
 	httpResponses "github.com/ardnh/be-travel-booking-app/internal/interfaces/http/responses"
@@ -41,12 +43,41 @@ func (h *ScheduleHandler) GetScheduleByID(c fiber.Ctx) error {
 }
 
 func (h *ScheduleHandler) GetAllSchedules(c fiber.Ctx) error {
-	schedules, err := h.scheduleService.GetAllSchedules(c.Context())
+	page := c.Query("page", "1")
+	pageSize := c.Query("page_size", "30")
+
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
+	}
+
+	pageSizeInt, err := strconv.Atoi(pageSize)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
+	}
+
+	if pageInt <= 0 {
+		pageInt = 1
+	}
+	if pageSizeInt <= 0 || pageSizeInt >= 1000 {
+		pageSizeInt = 30
+	}
+
+	schedules, total, err := h.scheduleService.GetAllSchedules(c.Context(), pageInt, pageSizeInt, "", "created_at", "desc")
 	if err != nil {
 		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
 	}
 
-	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Schedules retrieved successfully", schedules)
+	pagination := dto.Pagination{
+		CurrentPage: pageInt,
+		PageSize:    pageSizeInt,
+		TotalItems:  int(total),
+		TotalPages:  (int(total) + pageSizeInt - 1) / pageSizeInt,
+		HasNext:     pageInt*pageSizeInt < int(total),
+		HasPrevious: pageInt > 1,
+	}
+
+	return httpResponses.NewSuccessResponseWithPagination(c, fiber.StatusOK, "Schedules retrieved successfully", schedules, pagination)
 }
 
 func (h *ScheduleHandler) GetSchedulesByVendorID(c fiber.Ctx) error {
@@ -56,12 +87,41 @@ func (h *ScheduleHandler) GetSchedulesByVendorID(c fiber.Ctx) error {
 		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, "Invalid vendor ID", err)
 	}
 
-	schedules, err := h.scheduleService.GetSchedulesByVendorID(c.Context(), vendorID)
+	page := c.Query("page", "1")
+	pageSize := c.Query("page_size", "30")
+
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
+	}
+
+	pageSizeInt, err := strconv.Atoi(pageSize)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message, err)
+	}
+
+	if pageInt <= 0 {
+		pageInt = 1
+	}
+	if pageSizeInt <= 0 || pageSizeInt >= 1000 {
+		pageSizeInt = 30
+	}
+
+	schedules, total, err := h.scheduleService.GetSchedulesByVendorID(c.Context(), vendorID, pageInt, pageSizeInt, "", "created_at", "desc")
 	if err != nil {
 		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
 	}
 
-	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Schedules retrieved successfully", schedules)
+	pagination := dto.Pagination{
+		CurrentPage: pageInt,
+		PageSize:    pageSizeInt,
+		TotalItems:  int(total),
+		TotalPages:  (int(total) + pageSizeInt - 1) / pageSizeInt,
+		HasNext:     pageInt*pageSizeInt < int(total),
+		HasPrevious: pageInt > 1,
+	}
+
+	return httpResponses.NewSuccessResponseWithPagination(c, fiber.StatusOK, "Schedules retrieved successfully", schedules, pagination)
 }
 
 func (h *ScheduleHandler) CreateSchedule(c fiber.Ctx) error {

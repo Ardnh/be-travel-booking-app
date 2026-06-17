@@ -42,33 +42,123 @@ func (r *scheduleRepositoryImpl) GetScheduleByID(ctx context.Context, scheduleID
 	return &schedule, nil
 }
 
-func (r *scheduleRepositoryImpl) GetAllSchedules(ctx context.Context) ([]entities.Schedules, error) {
+func (r *scheduleRepositoryImpl) GetAllSchedules(ctx context.Context, page int, pageSize int, search string, sortBy string, sortOrder string) ([]entities.Schedules, int64, error) {
 	var schedules []entities.Schedules
-	err := r.db.WithContext(ctx).
+	var total int64
+
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 || pageSize >= 1000 {
+		pageSize = 30
+	}
+
+	offset := (page - 1) * pageSize
+
+	baseQuery := r.db.WithContext(ctx).
+		Model(&entities.Schedules{}).
 		Preload("Layout").
 		Preload("ServiceType").
 		Preload("OriginPool").
-		Preload("DestinationPool").
+		Preload("DestinationPool")
+
+	if search != "" {
+		baseQuery = baseQuery.Where("vehicle_type ILIKE ? OR status ILIKE ?", "%"+search+"%", "%"+search+"%")
+	}
+
+	if err := baseQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	allowedSort := map[string]bool{
+		"vehicle_type":   true,
+		"departure_date": true,
+		"departure_time": true,
+		"price_per_seat": true,
+		"total_seat":     true,
+		"available_seat": true,
+		"status":         true,
+		"created_at":     true,
+		"updated_at":     true,
+	}
+
+	if !allowedSort[sortBy] {
+		sortBy = "created_at"
+	}
+
+	if sortOrder != "asc" && sortOrder != "desc" {
+		sortOrder = "desc"
+	}
+
+	err := baseQuery.
+		Order(sortBy + " " + sortOrder).
+		Limit(pageSize).
+		Offset(offset).
 		Find(&schedules).Error
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return schedules, nil
+	return schedules, total, nil
 }
 
-func (r *scheduleRepositoryImpl) GetSchedulesByVendorID(ctx context.Context, vendorID uuid.UUID) ([]entities.Schedules, error) {
+func (r *scheduleRepositoryImpl) GetSchedulesByVendorID(ctx context.Context, vendorID uuid.UUID, page int, pageSize int, search string, sortBy string, sortOrder string) ([]entities.Schedules, int64, error) {
 	var schedules []entities.Schedules
-	err := r.db.WithContext(ctx).
+	var total int64
+
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 || pageSize >= 1000 {
+		pageSize = 30
+	}
+
+	offset := (page - 1) * pageSize
+
+	baseQuery := r.db.WithContext(ctx).
+		Model(&entities.Schedules{}).
 		Preload("Layout").
 		Preload("ServiceType").
 		Preload("OriginPool").
 		Preload("DestinationPool").
-		Where("vendor_id = ?", vendorID).
+		Where("vendor_id = ?", vendorID)
+
+	if search != "" {
+		baseQuery = baseQuery.Where("vehicle_type ILIKE ? OR status ILIKE ?", "%"+search+"%", "%"+search+"%")
+	}
+
+	if err := baseQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	allowedSort := map[string]bool{
+		"vehicle_type":   true,
+		"departure_date": true,
+		"departure_time": true,
+		"price_per_seat": true,
+		"total_seat":     true,
+		"available_seat": true,
+		"status":         true,
+		"created_at":     true,
+		"updated_at":     true,
+	}
+
+	if !allowedSort[sortBy] {
+		sortBy = "created_at"
+	}
+
+	if sortOrder != "asc" && sortOrder != "desc" {
+		sortOrder = "desc"
+	}
+
+	err := baseQuery.
+		Order(sortBy + " " + sortOrder).
+		Limit(pageSize).
+		Offset(offset).
 		Find(&schedules).Error
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return schedules, nil
+	return schedules, total, nil
 }
 
 func (r *scheduleRepositoryImpl) CreateSchedule(ctx context.Context, schedule entities.Schedules) error {

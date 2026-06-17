@@ -40,20 +40,20 @@ func (s *ScheduleServiceImpl) GetScheduleByID(ctx context.Context, scheduleID uu
 	return schedule, nil
 }
 
-func (s *ScheduleServiceImpl) GetAllSchedules(ctx context.Context) ([]entities.Schedules, error) {
-	schedules, err := s.scheduleRepository.GetAllSchedules(ctx)
+func (s *ScheduleServiceImpl) GetAllSchedules(ctx context.Context, page int, pageSize int, search string, sortBy string, sortOrder string) ([]entities.Schedules, int64, error) {
+	schedules, total, err := s.scheduleRepository.GetAllSchedules(ctx, page, pageSize, search, sortBy, sortOrder)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return schedules, nil
+	return schedules, total, nil
 }
 
-func (s *ScheduleServiceImpl) GetSchedulesByVendorID(ctx context.Context, vendorID uuid.UUID) ([]entities.Schedules, error) {
-	schedules, err := s.scheduleRepository.GetSchedulesByVendorID(ctx, vendorID)
+func (s *ScheduleServiceImpl) GetSchedulesByVendorID(ctx context.Context, vendorID uuid.UUID, page int, pageSize int, search string, sortBy string, sortOrder string) ([]entities.Schedules, int64, error) {
+	schedules, total, err := s.scheduleRepository.GetSchedulesByVendorID(ctx, vendorID, page, pageSize, search, sortBy, sortOrder)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return schedules, nil
+	return schedules, total, nil
 }
 
 func (s *ScheduleServiceImpl) CreateSchedule(ctx context.Context, req dto.CreateScheduleDTO) error {

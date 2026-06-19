@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/ardnh/be-travel-booking-app/internal/domain/entities"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/repositories"
@@ -142,6 +143,40 @@ func (r *poolPointRepositoryImpl) GetPoolPointsByVendorID(ctx context.Context, v
 	}
 
 	return poolPoints, total, nil
+}
+
+func (r *poolPointRepositoryImpl) GetAvailableLocationsByVendorID(ctx context.Context, vendorID uuid.UUID, locationType string) ([]string, error) {
+	locationType = strings.TrimSpace(strings.ToLower(locationType))
+	if locationType == "" {
+		return []string{}, nil
+	}
+
+	locationColumns := map[string]string{
+		"city":     "city",
+		"province": "province",
+		"district": "district",
+		"distict":  "district",
+	}
+
+	column, ok := locationColumns[locationType]
+	if !ok {
+		return nil, errorConst.ErrBadRequest
+	}
+
+	var locations []string
+	err := r.db.WithContext(ctx).
+		Model(&entities.Pools{}).
+		Where("vendor_id = ?", vendorID).
+		Where(column+" <> ?", "").
+		Distinct(column).
+		Order(column+" ASC").
+		Pluck(column, &locations).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return locations, nil
 }
 
 func (r *poolPointRepositoryImpl) CreatePoolPoint(ctx context.Context, poolPoint entities.Pools) (*entities.Pools, error) {

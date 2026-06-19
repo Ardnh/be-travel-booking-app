@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"errors"
 	"strconv"
 
 	"github.com/ardnh/be-travel-booking-app/internal/application/dto"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/services"
 	httpResponses "github.com/ardnh/be-travel-booking-app/internal/interfaces/http/responses"
 	validator_utils "github.com/ardnh/be-travel-booking-app/internal/utils/validator"
+	errorConst "github.com/ardnh/be-travel-booking-app/pkg/errors"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
 	"github.com/google/uuid"
@@ -114,6 +116,25 @@ func (h *PoolPointHandler) GetPoolPointsByVendorID(c fiber.Ctx) error {
 	}
 
 	return httpResponses.NewSuccessResponseWithPagination(c, fiber.StatusOK, "Pool points retrieved successfully", poolPoints, pagination)
+}
+
+func (h *PoolPointHandler) GetAvailableLocationsByVendorID(c fiber.Ctx) error {
+	vendorIDStr := c.Params("vendorId")
+	vendorID, err := uuid.Parse(vendorIDStr)
+	if err != nil {
+		return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, "Invalid vendor ID", err)
+	}
+
+	locationType := c.Query("location_type", "")
+	locations, err := h.poolPointService.GetAvailableLocationsByVendorID(c.Context(), vendorID, locationType)
+	if err != nil {
+		if errors.Is(err, errorConst.ErrBadRequest) {
+			return httpResponses.NewErrorResponse(c, fiber.ErrBadRequest.Code, "Invalid location type", err)
+		}
+		return httpResponses.NewErrorResponse(c, fiber.ErrInternalServerError.Code, fiber.ErrInternalServerError.Message, err)
+	}
+
+	return httpResponses.NewSuccessResponse(c, fiber.StatusOK, "Available locations retrieved successfully", locations)
 }
 
 func (h *PoolPointHandler) CreatePoolPoint(c fiber.Ctx) error {

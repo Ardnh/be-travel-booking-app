@@ -42,6 +42,7 @@ func SetupAPIRoutes(app *fiber.App, log *logrus.Logger, enforcer *casbin.Enforce
 	poolPoints.Put("/:id", casbinMw.Authorize(constants.ResourcePoolPoints, constants.ActionUpdate), poolPointHandler.UpdatePoolPoint)
 	poolPoints.Delete("/:id", casbinMw.Authorize(constants.ResourcePoolPoints, constants.ActionDelete), poolPointHandler.DeletePoolPoint)
 
+	poolPoints.Get("/vendors/:vendorId/available-locations", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourcePoolPoints, constants.ActionRead), poolPointHandler.GetAvailableLocationsByVendorID)
 	poolPoints.Get("/vendors/:vendorId/pool-points", authMiddleware.Authenticate(), casbinMw.Authorize(constants.ResourcePoolPoints, constants.ActionRead), poolPointHandler.GetPoolPointsByVendorID)
 
 	// Vendor routes

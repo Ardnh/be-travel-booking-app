@@ -55,6 +55,14 @@ func (s *PoolPointServiceImpl) GetPoolPointsByVendorID(ctx context.Context, vend
 	return poolPoints, total, nil
 }
 
+func (s *PoolPointServiceImpl) GetAvailableLocationsByVendorID(ctx context.Context, vendorID uuid.UUID, locationType string) ([]string, error) {
+	locations, err := s.poolPointRepository.GetAvailableLocationsByVendorID(ctx, vendorID, locationType)
+	if err != nil {
+		return nil, err
+	}
+	return locations, nil
+}
+
 func (s *PoolPointServiceImpl) CreatePoolPoint(ctx context.Context, req dto.CreatePoolsDTO) (*entities.Pools, error) {
 	vendorID, err := uuid.Parse(req.VendorID)
 	if err != nil {

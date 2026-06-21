@@ -1,0 +1,22 @@
+info:
+  name: get available pools by vendor id
+  type: http
+  seq: 7
+
+http:
+  method: GET
+  url: /pool-points/vendors/:vendorId/available-locations
+  params:
+    - name: ""
+      value: ""
+      type: query
+    - name: vendorId
+      value: 538cf47c-38e5-4d56-b706-31dbe6b7db3b
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -10,10 +10,20 @@ http:
     type: json
     data: |-
       {
-        "departure_time": "2024-01-01T08:00:00Z",
-        "arrival_time": "2024-01-01T12:00:00Z",
-        "vendor_id": "uuid-here",
-        "pool_id": "uuid-here"
+        "vendor_id": "3e4816c6-02e0-4484-bec7-46fc948d3ee3",
+        "service_type_id": "c7237150-2c95-42c2-903d-f26298290bb0",
+        "origin_pool_id": "d0790e21-468c-463c-9c8c-defc9a8f8202",
+        "destination_pool_id": "c75c1530-9404-4a16-8ed9-bfdef2c30bf9",
+        "layout_id": "489f1fef-3579-43f8-aea2-6581dd69edbc",
+        "vehicle_type": "ELF",
+        "departure_date": "2026-06-20",
+        "departure_time": "08:30:00",
+        "created_by": "admin",
+        "estimated_arrival_time": "11:30:00",
+        "price_per_seat": 150000,
+        "total_seat": 40,
+        "available_seat": 40,
+        "status": "ACTIVE"
       }
   auth: inherit
 

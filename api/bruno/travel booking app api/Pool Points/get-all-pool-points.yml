@@ -5,13 +5,13 @@ info:
 
 http:
   method: GET
-  url: "{{base_url}}/pool-points?page=1&page_size=1&search=&sort_by=&sort_order="
+  url: "{{base_url}}/pool-points?page=1&page_size=10&search=&sort_by=&sort_order="
   params:
     - name: page
       value: "1"
       type: query
     - name: page_size
-      value: "1"
+      value: "10"
       type: query
     - name: search
       value: ""

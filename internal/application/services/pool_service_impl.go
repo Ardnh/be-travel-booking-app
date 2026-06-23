@@ -55,12 +55,42 @@ func (s *PoolPointServiceImpl) GetPoolPointsByVendorID(ctx context.Context, vend
 	return poolPoints, total, nil
 }
 
-func (s *PoolPointServiceImpl) GetAvailableLocationsByVendorID(ctx context.Context, vendorID uuid.UUID, locationType string) ([]string, error) {
+func (s *PoolPointServiceImpl) GetAvailableLocationsByVendorID(ctx context.Context, vendorID uuid.UUID, locationType string) ([]dto.AvailableLocationDTO, error) {
 	locations, err := s.poolPointRepository.GetAvailableLocationsByVendorID(ctx, vendorID, locationType)
 	if err != nil {
 		return nil, err
 	}
-	return locations, nil
+	var result []dto.AvailableLocationDTO
+	for _, loc := range locations {
+		var poolsDTO []dto.PoolsResponseDTO
+		for _, p := range loc.Pools {
+			poolsDTO = append(poolsDTO, dto.PoolsResponseDTO{
+				PoolID:      p.PoolID.String(),
+				VendorID:    p.VendorID.String(),
+				Name:        p.Name,
+				Slug:        p.Slug,
+				Address:     p.Address,
+				City:        p.City,
+				Province:    p.Province,
+				District:    p.District,
+				Latitude:    p.Latitude,
+				Longitude:   p.Longitude,
+				OpenTime:    p.OpenTime,
+				CloseTime:   p.CloseTime,
+				Status:      p.Status,
+				Description: p.Description,
+				EmbedURL:    p.EmbedURL,
+				CreatedAt:   p.CreatedAt,
+				UpdatedAt:   p.UpdatedAt,
+			})
+		}
+		result = append(result, dto.AvailableLocationDTO{
+			CityName:   loc.City,
+			TotalPools: loc.TotalPool,
+			Pools:      poolsDTO,
+		})
+	}
+	return result, nil
 }
 
 func (s *PoolPointServiceImpl) CreatePoolPoint(ctx context.Context, req dto.CreatePoolsDTO) (*entities.Pools, error) {

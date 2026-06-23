@@ -145,10 +145,10 @@ func (r *poolPointRepositoryImpl) GetPoolPointsByVendorID(ctx context.Context, v
 	return poolPoints, total, nil
 }
 
-func (r *poolPointRepositoryImpl) GetAvailableLocationsByVendorID(ctx context.Context, vendorID uuid.UUID, locationType string) ([]string, error) {
+func (r *poolPointRepositoryImpl) GetAvailableLocationsByVendorID(ctx context.Context, vendorID uuid.UUID, locationType string) ([]entities.PoolLocationEntity, error) {
 	locationType = strings.TrimSpace(strings.ToLower(locationType))
 	if locationType == "" {
-		return []string{}, nil
+		return []entities.PoolLocationEntity{}, nil
 	}
 
 	locationColumns := map[string]string{
@@ -163,17 +163,28 @@ func (r *poolPointRepositoryImpl) GetAvailableLocationsByVendorID(ctx context.Co
 		return nil, errorConst.ErrBadRequest
 	}
 
-	var locations []string
+	var locations []entities.PoolLocationEntity
 	err := r.db.WithContext(ctx).
 		Model(&entities.Pools{}).
+		Select(column+" as city, count(*) as total_pool").
 		Where("vendor_id = ?", vendorID).
 		Where(column+" <> ?", "").
-		Distinct(column).
+		Group(column).
 		Order(column+" ASC").
-		Pluck(column, &locations).Error
+		Scan(&locations).Error
 
 	if err != nil {
 		return nil, err
+	}
+
+	for i := range locations {
+		var pools []entities.Pools
+		if err := r.db.WithContext(ctx).
+			Where("vendor_id = ? AND "+column+" = ?", vendorID, locations[i].City).
+			Find(&pools).Error; err != nil {
+			return nil, err
+		}
+		locations[i].Pools = pools
 	}
 
 	return locations, nil

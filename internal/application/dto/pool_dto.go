@@ -50,8 +50,14 @@ type PoolsResponseDTO struct {
 	OpenTime    string    `json:"open_time"`
 	CloseTime   string    `json:"close_time"`
 	Status      string    `json:"status"`
-	Description *string   `json:"description,omitempty"`
+	Description string    `json:"description,omitempty"`
 	EmbedURL    string    `json:"embed_url"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type AvailableLocationDTO struct {
+	CityName  string              `json:"city_name"`
+	TotalPools int64              `json:"total_pools"`
+	Pools     []PoolsResponseDTO  `json:"pools"`
 }

@@ -33,7 +33,7 @@ type Pools struct {
 func (Pools) TableName() string { return "pools" }
 
 type PoolLocationEntity struct {
-	City      string    `gorm:"column:city"`
-	TotalPool int64     `gorm:"column:total_pool"`
-	Pools     []Pools   `gorm:"-"`
+	City      string  `gorm:"column:city"`
+	TotalPool int64   `gorm:"column:total_pool"`
+	Pools     []Pools `gorm:"-"`
 }

@@ -170,7 +170,7 @@ func (r *poolPointRepositoryImpl) GetAvailableLocationsByVendorID(ctx context.Co
 		Where("vendor_id = ?", vendorID).
 		Where(column+" <> ?", "").
 		Group(column).
-		Order(column+" ASC").
+		Order(column + " ASC").
 		Scan(&locations).Error
 
 	if err != nil {

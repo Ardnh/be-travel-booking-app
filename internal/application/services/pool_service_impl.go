@@ -62,26 +62,12 @@ func (s *PoolPointServiceImpl) GetAvailableLocationsByVendorID(ctx context.Conte
 	}
 	var result []dto.AvailableLocationDTO
 	for _, loc := range locations {
-		var poolsDTO []dto.PoolsResponseDTO
+		var poolsDTO []dto.AvailablePoolsLocationDTO
 		for _, p := range loc.Pools {
-			poolsDTO = append(poolsDTO, dto.PoolsResponseDTO{
-				PoolID:      p.PoolID.String(),
-				VendorID:    p.VendorID.String(),
-				Name:        p.Name,
-				Slug:        p.Slug,
-				Address:     p.Address,
-				City:        p.City,
-				Province:    p.Province,
-				District:    p.District,
-				Latitude:    p.Latitude,
-				Longitude:   p.Longitude,
-				OpenTime:    p.OpenTime,
-				CloseTime:   p.CloseTime,
-				Status:      p.Status,
-				Description: p.Description,
-				EmbedURL:    p.EmbedURL,
-				CreatedAt:   p.CreatedAt,
-				UpdatedAt:   p.UpdatedAt,
+			poolsDTO = append(poolsDTO, dto.AvailablePoolsLocationDTO{
+				PoolID:   p.PoolID.String(),
+				VendorID: p.VendorID.String(),
+				Name:     p.Name,
 			})
 		}
 		result = append(result, dto.AvailableLocationDTO{

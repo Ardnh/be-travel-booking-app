@@ -57,7 +57,13 @@ type PoolsResponseDTO struct {
 }
 
 type AvailableLocationDTO struct {
-	CityName  string              `json:"city_name"`
-	TotalPools int64              `json:"total_pools"`
-	Pools     []PoolsResponseDTO  `json:"pools"`
+	CityName   string                      `json:"city_name"`
+	TotalPools int64                       `json:"total_pools"`
+	Pools      []AvailablePoolsLocationDTO `json:"pools"`
+}
+
+type AvailablePoolsLocationDTO struct {
+	PoolID   string `json:"pool_id"`
+	VendorID string `json:"vendor_id"`
+	Name     string `json:"name"`
 }

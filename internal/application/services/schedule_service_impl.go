@@ -3,14 +3,16 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/ardnh/be-travel-booking-app/internal/application/dto"
-	"github.com/ardnh/be-travel-booking-app/internal/application/mapper"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/entities"
 	"github.com/ardnh/be-travel-booking-app/internal/domain/repositories"
+	helpers "github.com/ardnh/be-travel-booking-app/internal/utils/helpers"
 	errorConst "github.com/ardnh/be-travel-booking-app/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 type ScheduleServiceImpl struct {
@@ -56,22 +58,120 @@ func (s *ScheduleServiceImpl) GetSchedulesByVendorID(ctx context.Context, vendor
 	return schedules, total, nil
 }
 
-func (s *ScheduleServiceImpl) CreateSchedule(ctx context.Context, req dto.CreateScheduleDTO) error {
-	schedule, err := mapper.CreateScheduleDTOToEntity(req)
+const maxGeneratedRows = 1000
+
+func (s *ScheduleServiceImpl) CreateSchedule(ctx context.Context, vendorId uuid.UUID, req dto.CreateScheduleDTO) (*dto.GenerateScheduleResultDTO, error) {
+
+	originID, err := uuid.Parse(req.OriginPoolID)
 	if err != nil {
-		s.log.WithFields(logrus.Fields{
-			"vendor_id":       req.VendorID,
-			"service_type_id": req.ServiceTypeID,
-			"error":           err,
-		}).Error("failed to map schedule dto to entity")
-		return errorConst.ErrInternalServer
+		return nil, errorConst.ErrBadRequest
+	}
+	serviceTypeID, _ := uuid.Parse(req.ServiceTypeID)
+	layoutID, _ := uuid.Parse(req.LayoutID)
+
+	destIDs := make([]uuid.UUID, 0, len(req.DestinationPoolIDs))
+	for _, id := range req.DestinationPoolIDs {
+		u, err := uuid.Parse(id)
+		if err != nil {
+			return nil, errorConst.ErrBadRequest
+		}
+		destIDs = append(destIDs, u)
 	}
 
-	err = s.scheduleRepository.CreateSchedule(ctx, schedule)
-	if err != nil {
-		return err
+	dates := helpers.ExpandDates(req.ValidFrom, req.ValidTo, req.DaysOfWeek)
+	if len(dates) == 0 {
+		return nil, errorConst.ErrBadRequest
 	}
-	return nil
+
+	total := len(dates) * len(destIDs) * len(req.DepartureTimes)
+	if total > maxGeneratedRows {
+		return nil, errors.New(fmt.Sprintf(
+			"would generate %d schedules, max is %d — narrow the date range", total, maxGeneratedRows))
+	}
+
+	batchID := uuid.New()
+	result := &dto.GenerateScheduleResultDTO{BatchID: batchID.String()}
+
+	err = s.repo.WithTx(func(tx *gorm.DB) error {
+		// ── validasi kepemilikan, semua di dalam tx ──
+		ok, err := s.repo.ValidateServiceType(tx, vendorID, serviceTypeID)
+		if err != nil {
+			return err
+		}
+		if !ok {
+			return apperr.Forbidden("service_type does not belong to this vendor")
+		}
+
+		allPools := append([]uuid.UUID{originID}, destIDs...)
+		found, err := s.repo.ValidatePoolOwnership(tx, vendorID, allPools)
+		if err != nil {
+			return err
+		}
+		if found != len(allPools) {
+			return apperr.Forbidden("one or more pools do not belong to this vendor")
+		}
+
+		seatCount, err := s.repo.CountLayoutSeats(tx, layoutID, vendorID)
+		if err != nil {
+			return err
+		}
+		if seatCount == 0 {
+			return apperr.BadRequest("layout not found, empty, or not owned by this vendor")
+		}
+
+		// ── build rows ──
+		rows := make([]models.Schedules, 0, total)
+		for _, date := range dates {
+			for _, destID := range destIDs {
+				for _, t := range d.DepartureTimes {
+					price, ok := resolvePrice(t, d.PriceBands)
+					if !ok {
+						return apperr.BadRequest("no price band matches departure_time " + t)
+					}
+
+					var eta *string
+					if d.DurationMinutes != nil {
+						eta = ptr(addMinutes(t, *d.DurationMinutes))
+					}
+
+					rows = append(rows, models.Schedules{
+						VendorID:             vendorID,
+						ServiceTypeID:        serviceTypeID,
+						OriginPoolID:         originID,
+						DestinationPoolID:    destID,
+						LayoutID:             layoutID,
+						ScheduleBatchID:      &batchID,
+						VehicleType:          d.VehicleType,
+						DepartureDate:        date,
+						DepartureTime:        t,
+						EstimatedArrivalTime: eta,
+						PricePerSeat:         price,
+						TotalSeat:            seatCount,
+						AvailableSeat:        seatCount,
+						Status:               "scheduled",
+						CreatedBy:            &userID,
+					})
+				}
+			}
+		}
+
+		affected, err := s.repo.BulkInsert(tx, rows, d.OverwriteExisting)
+		if err != nil {
+			return err
+		}
+
+		result.Created = int(affected)
+		result.Skipped = total - int(affected)
+		if result.Skipped > 0 && !d.OverwriteExisting {
+			result.Warnings = append(result.Warnings, fmt.Sprintf(
+				"%d schedules already existed and were skipped", result.Skipped))
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func (s *ScheduleServiceImpl) UpdateSchedule(ctx context.Context, scheduleID uuid.UUID, req dto.UpdateScheduleDTO) error {

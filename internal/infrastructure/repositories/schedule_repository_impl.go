@@ -157,6 +157,7 @@ func (r *scheduleRepositoryImpl) GetSchedulesByVendorID(ctx context.Context, ven
 		Limit(pageSize).
 		Offset(offset).
 		Find(&schedules).Error
+
 	if err != nil {
 		return nil, 0, err
 	}

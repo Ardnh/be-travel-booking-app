@@ -91,10 +91,6 @@ type CreateScheduleDTO struct {
 	OverwriteExisting  bool           `json:"overwrite_existing"`
 }
 
-type CreateSchedule struct {
-	CreateScheduleDTO
-}
-
 // func (d *GenerateScheduleDTO) Validate() error {
 // 	from, _ := time.Parse("2006-01-02", d.ValidFrom)
 // 	to, _ := time.Parse("2006-01-02", d.ValidTo)

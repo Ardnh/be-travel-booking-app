@@ -91,7 +91,6 @@ func (s *ScheduleServiceImpl) CreateSchedule(ctx context.Context, vendorId uuid.
 
 	batchID := uuid.New()
 	result := &dto.GenerateScheduleResultDTO{BatchID: batchID.String()}
-
 	err = s.repo.WithTx(func(tx *gorm.DB) error {
 		// ── validasi kepemilikan, semua di dalam tx ──
 		ok, err := s.repo.ValidateServiceType(tx, vendorID, serviceTypeID)
